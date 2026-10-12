@@ -220,3 +220,15 @@ AI-Industrial-Agent/
 ## 八、许可
 
 本项目原创代码采用 **Apache-2.0** 许可。AGH 及其派生部分遵循其原始许可（Apache-2.0）。
+---
+
+## 在线体验（无需安装）
+
+| 入口 | 链接 |
+|---|---|
+| 🌐 **三案例结果展示页**（GitHub Pages，点开即看） | https://huangfushengxin.github.io/zhiwei-industrial-agent/ |
+| 📦 **代码仓库** | https://github.com/huangfushengxin/zhiwei-industrial-agent |
+| 🎬 **演示视频**（3 分 59 秒） | https://www.bilibili.com/video/BV1MEpn6cExt/ |
+
+> 提示：展示页为自包含单文件 `index.html`（数据内嵌），无需服务器即可浏览。
+> 完整交互式演示（可上传数据、驱动真实 Agnes Agent）请按下方「快速开始」在本地运行。
