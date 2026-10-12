@@ -66,7 +66,7 @@
       "attempt": 1,
       "effectiveness": 0.5,
       "replan_reason": null,
-      "repair_csv": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\repairs\\sensor_overload_repair_e0.50_a1.csv",
+      "repair_csv": "C:\\Users\\28385\\Desktop\\AI-Industrial-Agent\\data\\repairs\\sensor_overload_repair_e0.50_a1.csv",
       "verify_status": "partial",
       "verdict": "部分修复：异常显著减轻但仍有残留故障",
       "worst_residual_sigma": 17.86,
@@ -85,7 +85,7 @@
       "attempt": 2,
       "effectiveness": 1.0,
       "replan_reason": "第 1 次验证未通过（残留 17.86σ），重新规划：提高维修彻底度至 effectiveness=1.00",
-      "repair_csv": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\repairs\\sensor_overload_repair_e1.00_a2.csv",
+      "repair_csv": "C:\\Users\\28385\\Desktop\\AI-Industrial-Agent\\data\\repairs\\sensor_overload_repair_e1.00_a2.csv",
       "verify_status": "success",
       "verdict": "维修成功：设备已恢复到健康基线",
       "worst_residual_sigma": 1.4,
@@ -109,7 +109,7 @@
         "file": "sensor_overload.csv",
         "samples": 600
       },
-      "at": "2026-10-09T18:11:26"
+      "at": "2026-10-12T13:58:39"
     },
     {
       "step": "detect_anomalies",
@@ -124,7 +124,7 @@
         ],
         "max_abs_shift_z": 38.04
       },
-      "at": "2026-10-09T18:11:26"
+      "at": "2026-10-12T13:58:39"
     },
     {
       "step": "diagnose_fault",
@@ -133,7 +133,7 @@
         "verdict": "负载过大 / 转动部件卡涩",
         "confidence": 0.936
       },
-      "at": "2026-10-09T18:11:26"
+      "at": "2026-10-12T13:58:40"
     },
     {
       "step": "plan_repair",
@@ -144,7 +144,7 @@
         "steps": 6,
         "estimated_hours": 3.0
       },
-      "at": "2026-10-09T18:11:26"
+      "at": "2026-10-12T13:58:40"
     },
     {
       "step": "simulate_repair",
@@ -152,9 +152,9 @@
       "detail": {
         "attempt": 1,
         "effectiveness": 0.5,
-        "output_csv": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\repairs\\sensor_overload_repair_e0.50_a1.csv"
+        "output_csv": "C:\\Users\\28385\\Desktop\\AI-Industrial-Agent\\data\\repairs\\sensor_overload_repair_e0.50_a1.csv"
       },
-      "at": "2026-10-09T18:11:26"
+      "at": "2026-10-12T13:58:40"
     },
     {
       "step": "verify_repair",
@@ -165,13 +165,13 @@
         "worst_residual_sigma": 17.86,
         "health_index": 20
       },
-      "at": "2026-10-09T18:11:27"
+      "at": "2026-10-12T13:58:40"
     },
     {
       "step": "replan",
       "status": "replanned",
       "detail": "第 1 次验证未通过（残留 17.86σ），重新规划：提高维修彻底度至 effectiveness=1.00",
-      "at": "2026-10-09T18:11:27"
+      "at": "2026-10-12T13:58:40"
     },
     {
       "step": "simulate_repair",
@@ -179,9 +179,9 @@
       "detail": {
         "attempt": 2,
         "effectiveness": 1.0,
-        "output_csv": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\repairs\\sensor_overload_repair_e1.00_a2.csv"
+        "output_csv": "C:\\Users\\28385\\Desktop\\AI-Industrial-Agent\\data\\repairs\\sensor_overload_repair_e1.00_a2.csv"
       },
-      "at": "2026-10-09T18:11:27"
+      "at": "2026-10-12T13:58:40"
     },
     {
       "step": "verify_repair",
@@ -192,10 +192,10 @@
         "worst_residual_sigma": 1.4,
         "health_index": 100
       },
-      "at": "2026-10-09T18:11:27"
+      "at": "2026-10-12T13:58:40"
     }
   ],
   "next_step": "归档本次闭环记录（trace 可作为 Agent 执行时间线）",
-  "started_at": "2026-10-09T18:11:26",
-  "finished_at": "2026-10-09T18:11:27"
+  "started_at": "2026-10-12T13:58:39",
+  "finished_at": "2026-10-12T13:58:40"
 }

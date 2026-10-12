@@ -1,10 +1,10 @@
 {
   "tool": "simulate_repair",
-  "created_at": "2026-10-09T18:11:29",
-  "source_file": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\sensor_misalignment.csv",
+  "created_at": "2026-10-12T13:58:41",
+  "source_file": "C:\\Users\\28385\\Desktop\\AI-Industrial-Agent\\data\\sensor_misalignment.csv",
   "source_name": "sensor_misalignment.csv",
   "baseline_source": null,
-  "output_csv": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\repairs\\sensor_misalignment_repair_e1.00_a1.csv",
+  "output_csv": "C:\\Users\\28385\\Desktop\\AI-Industrial-Agent\\data\\repairs\\sensor_misalignment_repair_e1.00_a1.csv",
   "fault": "misalignment",
   "fault_name": "联轴器不对中 / 转子不平衡",
   "repair_target": "bearing_wear",
