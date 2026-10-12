@@ -1,0 +1,37 @@
+{
+  "tool": "simulate_repair",
+  "created_at": "2026-10-09T14:25:58",
+  "source_file": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\sensor_boundary_bearing_early.csv",
+  "source_name": "sensor_boundary_bearing_early.csv",
+  "output_csv": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\repairs\\sensor_boundary_bearing_early_repair_e1.00_a1.csv",
+  "fault": "bearing_wear",
+  "fault_name": "轴承磨损（滚动体 / 滚道损伤）",
+  "repair_target": "bearing_wear",
+  "repair_target_name": null,
+  "addressed_sensors": [
+    "current_a",
+    "temperature_c",
+    "vibration_mm_s"
+  ],
+  "effectiveness": 1.0,
+  "attempt": 1,
+  "seed": 20261011,
+  "samples": 600,
+  "start_time": "2026-10-10T08:10:59",
+  "estimated_fault_offset": {
+    "temperature_c": 1.255,
+    "vibration_mm_s": 0.38,
+    "speed_rpm": -3.64,
+    "current_a": 0.465,
+    "pressure_mpa": -0.001,
+    "flow_m3h": 0.185
+  },
+  "residual_offset": {
+    "temperature_c": 0.0,
+    "vibration_mm_s": 0.0,
+    "speed_rpm": -3.64,
+    "current_a": 0.0,
+    "pressure_mpa": -0.001,
+    "flow_m3h": 0.185
+  }
+}

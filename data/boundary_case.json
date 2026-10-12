@@ -1,0 +1,15 @@
+{
+  "scenario": "boundary_bearing_early",
+  "file": "sensor_boundary_bearing_early.csv",
+  "description": "边界案例：早期轻微轴承磨损（幅度约满强度 25%，刚越过检测阈值）",
+  "expected_fault": "bearing_wear",
+  "expected_severity": "warning",
+  "fault_onset_s": 180.0,
+  "fault_full_s": 420.0,
+  "delta": {
+    "temperature_c": 1.8,
+    "vibration_mm_s": 0.45,
+    "current_a": 0.6
+  },
+  "rows": 600
+}

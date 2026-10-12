@@ -1,0 +1,38 @@
+{
+  "tool": "simulate_repair",
+  "created_at": "2026-10-09T18:12:00",
+  "source_file": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\uploads\\test_03_repair_failed_20261009-181157.csv",
+  "source_name": "test_03_repair_failed_20261009-181157.csv",
+  "baseline_source": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\uploads\\test_02_bearing_fault_20261009-181157.csv",
+  "output_csv": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\repairs\\test_03_repair_failed_20261009-181157_repair_e1.00_a2.csv",
+  "fault": "bearing_wear",
+  "fault_name": "轴承磨损（滚动体 / 滚道损伤）",
+  "repair_target": "bearing_wear",
+  "repair_target_name": "轴承磨损（滚动体 / 滚道损伤）",
+  "addressed_sensors": [
+    "current_a",
+    "temperature_c",
+    "vibration_mm_s"
+  ],
+  "effectiveness": 1.0,
+  "attempt": 2,
+  "seed": 20261012,
+  "samples": 600,
+  "start_time": "2026-10-11T09:51:58",
+  "estimated_fault_offset": {
+    "temperature_c": 10.475,
+    "vibration_mm_s": 3.74,
+    "speed_rpm": -6.415,
+    "current_a": 1.81,
+    "pressure_mpa": -0.001,
+    "flow_m3h": 0.225
+  },
+  "residual_offset": {
+    "temperature_c": 0.0,
+    "vibration_mm_s": 0.0,
+    "speed_rpm": -6.415,
+    "current_a": 0.0,
+    "pressure_mpa": -0.001,
+    "flow_m3h": 0.225
+  }
+}

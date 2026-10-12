@@ -1,0 +1,93 @@
+{
+  "tool": "validate_day4",
+  "total": 4,
+  "passed": 4,
+  "accuracy": 1.0,
+  "case": "错误诊断 -> 验证失败 -> 重新规划 -> 维修成功",
+  "results": [
+    {
+      "scenario": "bearing_wear",
+      "true_fault": "bearing_wear",
+      "misdiagnosed_as": "misalignment",
+      "attempt1_status": "partial",
+      "attempt1_residual_sigma": 23.92,
+      "attempt2_status": "success",
+      "attempt2_residual_sigma": 1.78,
+      "health": {
+        "before": 25,
+        "after_misrepair": 65,
+        "after_correct_repair": 100
+      },
+      "checks": {
+        "错误诊断的维修未通过验证": true,
+        "重新规划后的维修通过验证": true,
+        "健康度恢复到 100": true,
+        "残留故障指向真实故障": true
+      },
+      "correct": true
+    },
+    {
+      "scenario": "misalignment",
+      "true_fault": "misalignment",
+      "misdiagnosed_as": "bearing_wear",
+      "attempt1_status": "partial",
+      "attempt1_residual_sigma": 35.61,
+      "attempt2_status": "success",
+      "attempt2_residual_sigma": 1.77,
+      "health": {
+        "before": 25,
+        "after_misrepair": 65,
+        "after_correct_repair": 100
+      },
+      "checks": {
+        "错误诊断的维修未通过验证": true,
+        "重新规划后的维修通过验证": true,
+        "健康度恢复到 100": true,
+        "残留故障指向真实故障": true
+      },
+      "correct": true
+    },
+    {
+      "scenario": "overload",
+      "true_fault": "overload",
+      "misdiagnosed_as": "bearing_wear",
+      "attempt1_status": "failed",
+      "attempt1_residual_sigma": 28.51,
+      "attempt2_status": "success",
+      "attempt2_residual_sigma": 1.4,
+      "health": {
+        "before": 20,
+        "after_misrepair": 50,
+        "after_correct_repair": 100
+      },
+      "checks": {
+        "错误诊断的维修未通过验证": true,
+        "重新规划后的维修通过验证": true,
+        "健康度恢复到 100": true,
+        "残留故障指向真实故障": true
+      },
+      "correct": true
+    },
+    {
+      "scenario": "cavitation",
+      "true_fault": "cavitation",
+      "misdiagnosed_as": "misalignment",
+      "attempt1_status": "partial",
+      "attempt1_residual_sigma": 38.9,
+      "attempt2_status": "success",
+      "attempt2_residual_sigma": 1.66,
+      "health": {
+        "before": 10,
+        "after_misrepair": 50,
+        "after_correct_repair": 100
+      },
+      "checks": {
+        "错误诊断的维修未通过验证": true,
+        "重新规划后的维修通过验证": true,
+        "健康度恢复到 100": true,
+        "残留故障指向真实故障": true
+      },
+      "correct": true
+    }
+  ]
+}

@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>智维 AI Industrial Operations Agent</title>
+<style>
+  :root{--bg:#0a101c;--panel:#111a2b;--panel2:#16223a;--line:#233350;--text:#e9effb;
+        --muted:#8fa3c4;--cyan:#37d6d6;--green:#3ddc97;--amber:#ffc857;--red:#ff6b6b}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+       font-family:"Segoe UI","Microsoft YaHei",system-ui,sans-serif;line-height:1.55}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 22px}
+  header{border-bottom:1px solid var(--line);background:linear-gradient(180deg,#0e1728,#0a101c)}
+  .head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 0;flex-wrap:wrap}
+  .brand{font-size:20px;font-weight:700;letter-spacing:.3px}
+  .brand span{color:var(--cyan)}
+  .chips{display:flex;gap:10px;flex-wrap:wrap}
+  .chip{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:6px 12px;font-size:12.5px;color:var(--muted)}
+  .chip b{color:var(--text);margin-left:6px}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--muted);margin-right:6px}
+  .dot.ok{background:var(--green);box-shadow:0 0 8px var(--green)}
+  .dot.bad{background:var(--red)}
+  .dot.wait{background:var(--amber)}
+  .bar{border-bottom:1px solid var(--line);background:#0d1626}
+  .bar-inner{display:flex;align-items:center;gap:14px;padding:12px 0;flex-wrap:wrap}
+  .bar-title{font-size:13px;color:var(--muted);letter-spacing:.5px}
+  select,input[type=file]{background:var(--panel);color:var(--text);border:1px solid var(--line);
+        border-radius:10px;padding:9px 12px;font-size:14px}
+  select{min-width:280px}
+  .btn{cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--text);
+       padding:9px 16px;border-radius:10px;font-size:14px;display:inline-block}
+  .btn:hover{border-color:var(--cyan);color:var(--cyan)}
+  .btn.primary{background:linear-gradient(135deg,#1d7f8a,#2fbfc9);border-color:#2fbfc9;color:#052229;font-weight:700}
+  .btn.primary:hover{color:#052229;filter:brightness(1.08)}
+  .btn[disabled]{opacity:.45;pointer-events:none}
+  .hint{color:var(--muted);font-size:12.5px}
+  main{padding:18px 0 50px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:960px){.grid2{grid-template-columns:1fr}}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:16px}
+  .panel h3{margin:0 0 12px;font-size:14px;color:var(--muted);letter-spacing:.6px;font-weight:600}
+  .panel h4{margin:0 0 8px;font-size:13px;color:var(--muted);font-weight:600}
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+  @media(max-width:560px){.metrics{grid-template-columns:repeat(2,1fr)}}
+  .metric{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+  .metric .k{font-size:12px;color:var(--muted)}
+  .metric .v{font-size:20px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
+  .metric .v small{font-size:12px;color:var(--muted);font-weight:400;margin-left:3px}
+  .metric.warn{border-color:#7a6428}
+  .metric.warn .v{color:var(--amber)}
+  .metric.bad{border-color:#7a3636}
+  .metric.bad .v{color:var(--red)}
+  .chart{width:100%;height:190px;background:#0d1626;border:1px solid var(--line);border-radius:12px}
+  .legend{display:flex;gap:16px;margin-top:8px;font-size:12.5px;color:var(--muted)}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px}
+  .kv{margin-bottom:12px}
+  .kv .lbl{font-size:12.5px;color:var(--muted);margin-bottom:4px}
+  .fault{font-size:17px;font-weight:700}
+  .conf{font-size:12.5px;color:var(--cyan);margin-left:8px}
+  ul.tight{margin:4px 0 0;padding-left:18px;font-size:13.5px;color:#cfe0f8}
+  ul.tight li{margin:2px 0}
+  .badge{display:inline-block;font-size:12px;padding:2px 10px;border-radius:999px;border:1px solid;margin-left:6px}
+  .b-normal{color:var(--green);border-color:#2b6b52;background:#122a22}
+  .b-warning{color:var(--amber);border-color:#7a6428;background:#2a2413}
+  .b-critical{color:var(--red);border-color:#7a3636;background:#2a1616}
+  .b-ok{color:var(--green);border-color:#2b6b52;background:#122a22}
+  .b-bad{color:var(--red);border-color:#7a3636;background:#2a1616}
+  .stepper{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+  .step{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--panel2);
+        border-radius:999px;padding:7px 14px;font-size:13.5px;color:var(--muted)}
+  .step .sdot{width:9px;height:9px;border-radius:50%;background:#41506e}
+  .step.running{border-color:var(--cyan);color:var(--text)}
+  .step.running .sdot{background:var(--cyan);animation:pulse 1s infinite}
+  .step.done{border-color:#2b6b52;color:var(--text)}
+  .step.done .sdot{background:var(--green)}
+  .step.failed{border-color:#7a3636;color:var(--text)}
+  .step.failed .sdot{background:var(--red)}
+  .arrow{color:#3d4d6b}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .log{background:#08101f;border:1px solid var(--line);border-radius:12px;padding:12px;max-height:220px;
+       overflow:auto;font-family:Consolas,monospace;font-size:12.5px;color:#9fd3ff;white-space:pre-wrap}
+  .verify-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  @media(max-width:900px){.verify-grid{grid-template-columns:1fr}}
+  .vbox{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px}
+  table.shifts{width:100%;border-collapse:collapse;font-size:13px}
+  table.shifts td{padding:4px 0;color:#cfe0f8}
+  table.shifts td:last-child{text-align:right;font-variant-numeric:tabular-nums}
+  .vstat{font-size:20px;font-weight:700}
+  details{margin-top:12px}
+  summary{cursor:pointer;color:var(--muted);font-size:13px}
+  pre.answer{white-space:pre-wrap;background:#0d1626;border:1px solid var(--line);border-radius:12px;
+             padding:12px;font-size:13px;color:#dbe8ff;max-height:340px;overflow:auto;margin-top:10px}
+  footer{color:var(--muted);font-size:12.5px;text-align:center;padding:16px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap head">
+    <div class="brand">智维 <span>AI Industrial Operations Agent</span></div>
+    <div class="chips">
+      <span class="chip"><span class="dot wait" id="agnesDot"></span>Agnes Status<b id="agnesStatus">检测中</b></span>
+      <span class="chip"><span class="dot wait" id="aghDot"></span>AGH Runtime<b id="aghStatus">检测中</b></span>
+      <span class="chip">MCP Tools<b id="toolCount">—</b></span>
+    </div>
+  </div>
+</header>
+
+<div class="bar">
+  <div class="wrap bar-inner">
+    <span class="bar-title">设备选择与数据上传</span>
+    <select id="device"></select>
+    <select id="baseline" title="维修前数据（可选，用于分析维修后复测数据）"></select>
+    <input type="file" id="file" accept=".csv,.txt" hidden />
+    <label class="btn" for="file">上传 CSV</label>
+    <button class="btn primary" id="start">开始智能诊断</button>
+    <span class="hint" id="dataInfo">未选择设备</span>
+  </div>
+</div>
+
+<main class="wrap">
+  <section class="panel">
+    <h3>任务输入</h3>
+    <textarea id="taskText" spellcheck="false" style="height:74px">检查这台电机是否存在异常。如果存在，请诊断故障、制定维修方案，并验证维修结果。</textarea>
+    <div class="hint" style="margin-top:6px">可直接编辑任务内容；点击「开始智能诊断」后，该任务将由 Agnes Agent 在 AGH 中自主执行。</div>
+  </section>
+
+  <div class="grid2">
+    <section class="panel">
+      <h3>设备实时数据</h3>
+      <div class="metrics" id="metrics"></div>
+      <h4>温度 / 振动趋势</h4>
+      <svg class="chart" id="chart" viewBox="0 0 560 190" preserveAspectRatio="none"></svg>
+      <div class="legend">
+        <span><i style="background:#ff9f43"></i>轴承温度 (°C)</span>
+        <span><i style="background:#37d6d6"></i>振动速度 (mm/s)</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h3>AI 故障诊断</h3>
+      <div class="kv"><div class="lbl">可能故障</div>
+        <div><span class="fault" id="diagFault">—</span><span class="conf" id="diagConf"></span><span id="sevBadge"></span></div></div>
+      <div class="kv"><div class="lbl">判断依据</div><ul class="tight" id="diagEvidence"><li>等待诊断…</li></ul></div>
+      <div class="kv"><div class="lbl">维修建议</div><ul class="tight" id="diagActions"><li>等待诊断…</li></ul></div>
+      <div class="kv" style="border-top:1px solid var(--line);padding-top:12px">
+        <div class="lbl" id="planLabel">维修方案</div><div id="planBox" class="hint">等待生成…</div></div>
+    </section>
+  </div>
+
+  <section class="panel">
+    <h3>Agent 执行时间线 <span class="hint" id="phaseText"></span></h3>
+    <div class="stepper" id="stepper"></div>
+    <div class="hint" style="margin:10px 0 6px">外部能力调用（通过 MCP 调用的工具链）</div>
+    <div class="log" id="log">等待开始…</div>
+    <details id="answerBox" hidden><summary>查看 Agent 完整结论</summary><pre class="answer" id="answer"></pre></details>
+  </section>
+
+  <section class="panel">
+    <h3>维修验证结果 <span class="hint" id="verifyScope"></span></h3>
+    <div class="verify-grid">
+      <div class="vbox"><h4>维修前数据（各测点偏移 σ）</h4><table class="shifts" id="beforeShifts"><tr><td>—</td><td>—</td></tr></table></div>
+      <div class="vbox"><h4>维修后数据（各测点偏移 σ）</h4><table class="shifts" id="afterShifts"><tr><td>—</td><td>—</td></tr></table></div>
+      <div class="vbox"><h4>验证状态</h4><div class="vstat" id="verifyStatus">—</div><div class="hint" id="verifyNote"></div><div class="hint" id="priorVerify" style="margin-top:8px"></div></div>
+    </div>
+  </section>
+</main>
+<footer>执行底座 Agnes Harness (AGH) · 模型 Agnes 3.0 Flash · 工具经 MCP 调用 · 数据仅在本机处理<br><span style="opacity:.6">构建 v6 · 2026-10-11 · 新增任务输入 + 外部能力调用标注</span></footer>
+
+<script>
+const STEP_IDS = ["plan","read","detect","diagnose","repair","verify"];
+const TOOL_TO_STEP = { read_sensor_summary:"read", detect_anomalies:"detect", diagnose_fault:"diagnose",
+  plan_repair:"diagnose", simulate_repair:"repair", verify_repair:"verify" };
+const el = id => document.getElementById(id);
+let es = null, busy = false, devices = [];
+
+(async function init(){
+  try{
+    const h = await (await fetch("/api/health")).json();
+    el("aghStatus").textContent = h.aghFound ? "已就绪" : "未找到";
+    el("aghDot").className = "dot " + (h.aghFound ? "ok" : "bad");
+  }catch(e){ el("aghStatus").textContent = "不可用"; el("aghDot").className = "dot bad"; }
+  try{
+    const d = await (await fetch("/api/devices")).json();
+    devices = d.devices || [];
+    el("device").innerHTML = devices.map(x => '<option value="'+x.sample+'">'+x.name+'</option>').join("");
+    el("baseline").innerHTML = '<option value="">（无基线 · 单文件分析）</option>' +
+      devices.map(x => '<option value="'+x.sample+'">维修前：'+x.id+'</option>').join("");
+    syncBaseline();
+    await loadDevice();
+    el("agnesStatus").textContent = "在线"; el("agnesDot").className = "dot ok";
+    el("toolCount").textContent = "9";
+  }catch(e){ el("dataInfo").textContent = "设备列表加载失败"; }
+})();
+
+async function loadDevice(sample){
+  const name = sample || el("device").value;
+  const r = await fetch("/api/sample?name=" + encodeURIComponent(name));
+  if(!r.ok){ el("dataInfo").textContent = "示例载入失败"; return; }
+  el("csvCache") ; window.__csv = await r.text();
+  window.__csvName = name;
+  const rows = window.__csv.trim().split("\n").length - 1;
+  el("dataInfo").textContent = el("device").selectedOptions[0].textContent.split("·")[0].trim() + "：共 " + rows + " 行";
+  renderMetrics(window.__csv);
+  renderChart(window.__csv);
+}
+function syncBaseline(){
+  const d = devices.find(x => x.sample === el("device").value);
+  el("baseline").value = (d && d.pair) ? d.pair : "";
+  el("dataInfo").textContent = (d && d.pair)
+    ? ("已自动配对维修前基线：" + d.pair.split("/").pop()) : "";
+}
+el("device").addEventListener("change", () => { syncBaseline(); loadDevice(); });
+el("baseline").addEventListener("change", () => {
+  const v = el("baseline").value;
+  el("dataInfo").textContent = v ? "将以所选数据为维修前基线，对比当前设备数据" : "单文件分析模式";
+});
+el("file").addEventListener("change", async e => {
+  const f = e.target.files[0]; if(!f) return;
+  window.__csv = await f.text(); window.__csvName = f.name;
+  // 按文件名自动识别是哪台设备/哪份测试文件，并自动配对维修前基线
+  const stem = f.name.replace(/\.[^.]+$/, "").toLowerCase();
+  const match = devices.find(x =>
+    x.sample.split("/").pop().replace(/\.[^.]+$/, "").toLowerCase() === stem);
+  let extra = "";
+  if (match) {
+    el("device").value = match.sample;   // 同步设备下拉（不触发 change，避免覆盖已上传数据）
+    syncBaseline();
+    const paired = el("baseline").value;
+    extra = paired ? (" · 已自动配对维修前基线：" + paired.split("/").pop())
+                   : " · 该文件无需基线";
+  } else {
+    el("baseline").value = "";
+    extra = " · 未识别到配对基线；若这是维修后复测数据，请手动选择「维修前基线」";
+  }
+  el("dataInfo").textContent = "已上传：" + f.name + extra;
+  renderMetrics(window.__csv); renderChart(window.__csv);
+});
+
+function parseCsv(text){
+  const lines = text.trim().split(/\r?\n/);
+  const head = lines[0].split(",").map(s => s.trim());
+  const rows = lines.slice(1).map(l => l.split(","));
+  const col = n => head.indexOf(n);
+  return { head, rows, col };
+}
+function renderMetrics(text){
+  const { rows, col } = parseCsv(text);
+  const picks = [
+    { key:"temperature_c", label:"温度", unit:"℃", idx:col("temperature_c"), warn:75 },
+    { key:"vibration_mm_s", label:"振动", unit:"", idx:col("vibration_mm_s"), warn:4.5 },
+    { key:"speed_rpm", label:"转速", unit:"rpm", idx:col("speed_rpm") },
+    { key:"current_a", label:"电流", unit:"A", idx:col("current_a"), warn:50 }
+  ];
+  el("metrics").innerHTML = picks.map(p => {
+    const last = rows.length ? Number(rows[rows.length-1][p.idx]) : NaN;
+    const vals = rows.map(r => Number(r[p.idx])).filter(v => !isNaN(v));
+    const warn = p.warn != null && vals.length && (Math.max(...vals.map(v=>Math.abs(v - vals[0]))) > 0)
+      && (p.key === "temperature_c" ? Math.max(...vals) > p.warn
+        : p.key === "vibration_mm_s" ? Math.max(...vals) > 3
+        : p.key === "current_a" ? Math.max(...vals) > 52 : false);
+    const cls = warn ? "metric bad" : "metric";
+    return '<div class="'+cls+'"><div class="k">'+p.label+'</div><div class="v">'+
+           (isNaN(last) ? "—" : last.toFixed(p.key==="speed_rpm"?0:2))+
+           '<small>'+p.unit+'</small></div></div>';
+  }).join("");
+}
+function renderChart(text){
+  const { rows, col } = parseCsv(text);
+  const t = rows.map(r => Number(r[col("temperature_c")]));
+  const v = rows.map(r => Number(r[col("vibration_mm_s")]));
+  const W = 560, H = 190, P = {l:40, r:14, t:14, b:24};
+  const n = t.length; if(!n){ el("chart").innerHTML = ""; return; }
+  const idx = i => P.l + (W-P.l-P.r) * (n<=1?0:i/(n-1));
+  const scale = arr => { const mn = Math.min(...arr), mx = Math.max(...arr);
+    const pad = (mx-mn)*0.15 || 1; return {mn:mn-pad, mx:mx+pad}; };
+  const st = scale(t), sv = scale(v);
+  const yT = y => H-P.b - (H-P.t-P.b) * ((y-st.mn)/(st.mx-st.mn));
+  const yV = y => H-P.b - (H-P.t-P.b) * ((y-sv.mn)/(sv.mx-sv.mn));
+  const line = (arr, yf) => arr.map((y,i) => (i?"L":"M") + idx(i).toFixed(1) + " " + yf(y).toFixed(1)).join(" ");
+  const grid = [0,1,2,3].map(i => { const y = P.t + (H-P.t-P.b)*i/3;
+    return '<line x1="'+P.l+'" y1="'+y.toFixed(1)+'" x2="'+(W-P.r)+'" y2="'+y.toFixed(1)+'" stroke="#233350" stroke-width="1"/>'; }).join("");
+  const labels = '<text x="4" y="'+(P.t+10)+'" fill="#ff9f43" font-size="11">'+st.mx.toFixed(1)+'</text>'+
+                 '<text x="4" y="'+(H-P.b)+'" fill="#ff9f43" font-size="11">'+st.mn.toFixed(1)+'</text>'+
+                 '<text x="'+(W-P.r-46)+'" y="'+(P.t+10)+'" fill="#37d6d6" font-size="11">'+sv.mx.toFixed(2)+'</text>'+
+                 '<text x="'+(W-P.r-46)+'" y="'+(H-P.b)+'" fill="#37d6d6" font-size="11">'+sv.mn.toFixed(2)+'</text>';
+  el("chart").innerHTML = grid + labels +
+    '<path d="'+line(t,yT)+'" fill="none" stroke="#ff9f43" stroke-width="1.8"/>' +
+    '<path d="'+line(v,yV)+'" fill="none" stroke="#37d6d6" stroke-width="1.8"/>';
+}
+
+function renderStepper(steps){
+  el("stepper").innerHTML = steps.map((s,i) =>
+    (i?'<span class="arrow">→</span>':'') +
+    '<span class="step" id="step-'+s.id+'" title="'+s.tool+'"><span class="sdot"></span>'+s.name+'</span>').join("");
+}
+function setStep(id, state){ const n = el("step-"+id); if(n) n.className = "step " + state; }
+function markAll(state){ STEP_IDS.forEach(i => setStep(i, state)); }
+function log(text){ const b = el("log"); b.textContent += "\n" + text; b.scrollTop = b.scrollHeight; }
+function badge(cls, text){ return '<span class="badge ' + cls + '">' + text + '</span>'; }
+
+el("start").onclick = async () => {
+  if(busy) return;
+  const csv = window.__csv;
+  if(!csv){ el("dataInfo").textContent = "请先选择设备或上传 CSV"; return; }
+  busy = true; el("start").disabled = true;
+  el("log").textContent = "Agent 已接收任务，正在规划执行步骤…";
+  el("answerBox").hidden = true; el("answer").textContent = "";
+  el("verifyStatus").textContent = "—"; el("verifyNote").textContent = "";
+  el("priorVerify").textContent = "";
+  el("verifyScope").textContent = el("baseline").value
+    ? "（① 上次维修验证 → ② 再次维修 → ③ 再次维修后验证）" : "（本次维修前后对比）";
+  el("diagFault").textContent = "分析中…"; el("diagConf").textContent = ""; el("sevBadge").innerHTML = "";
+  el("diagEvidence").innerHTML = "<li>等待诊断…</li>"; el("diagActions").innerHTML = "<li>等待诊断…</li>";
+  el("planBox").textContent = "等待生成…";
+  el("planLabel").textContent = el("baseline").value
+    ? "再次维修方案（上次维修未通过）" : "维修方案";
+  el("beforeShifts").innerHTML = "<tr><td>—</td><td>—</td></tr>";
+  el("afterShifts").innerHTML = "<tr><td>—</td><td>—</td></tr>";
+
+  const up = await (await fetch("/api/upload", { method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ name: window.__csvName || "motor_data.csv", csv }) })).json();
+  if(up.error){ log("上传失败：" + up.error); busy = false; el("start").disabled = false; return; }
+
+  let baselineFile = "";
+  const baselineSample = el("baseline").value;
+  if(baselineSample){
+    el("phaseText").textContent = "· 正在上传维修前基线数据…";
+    const btext = await (await fetch("/api/sample?name=" + encodeURIComponent(baselineSample))).text();
+    const bup = await (await fetch("/api/upload", { method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ name: baselineSample.split("/").pop(), csv: btext }) })).json();
+    baselineFile = bup.file || "";
+    log("维修前基线已上传：" + baselineFile);
+  }
+
+  if(es) es.close();
+  es = new EventSource("/api/run?file=" + encodeURIComponent(up.file) +
+    (baselineFile ? "&baseline=" + encodeURIComponent(baselineFile) : "") +
+    "&task=" + encodeURIComponent(el("taskText").value || ""));
+  es.onmessage = ev => {
+    const d = JSON.parse(ev.data);
+    switch(d.type){
+      case "status": el("log").textContent = d.text; break;
+      case "phase": el("phaseText").textContent = "· " + d.text; break;
+      case "plan_steps": renderStepper(d.steps); setStep("plan","running"); setTimeout(()=>setStep("plan","done"), 600); break;
+      case "sensors": renderSensorDetails(d); break;
+      case "trend": break;
+      case "detect":
+        el("sevBadge").innerHTML = badge("b-"+d.severity, d.severity);
+        log("[检测] " + d.conclusion + "（最大偏移 " + d.max_abs_shift_z + "σ）");
+        break;
+      case "diagnosis": renderDiagnosis(d); break;
+      case "repair_plan": renderPlan(d); break;
+      case "repair": if(!d.skipped) log("[维修] 已生成复测数据 " + d.csv); break;
+      case "prior_verify":
+        el("priorVerify").textContent = "① 上次维修验证：" + d.status + "（" + d.verdict + "）"
+          + " · 残留 " + d.worst_residual_sigma + "σ"
+          + " → 已按残留故障重新规划并执行再次维修，下面为再次维修后的验证结果";
+        log("[上次维修] " + d.status + " · " + d.verdict + " · 残留 " + d.worst_residual_sigma + "σ");
+        break;
+      case "verify": renderVerify(d); break;
+      case "tool":
+        if(d.tool === "zhiwei-closed-loop"){ if(d.status==="running") markAll("running"); else markAll(d.status==="ok"?"done":"failed"); }
+        else if(d.step) setStep(d.step, d.status==="running" ? "running" : (d.status==="ok" ? "done" : "failed"));
+        if(d.text) log((d.status==="ok"?"[完成] ":d.status==="failed"?"[失败] ":"[进行] ") + d.text.replace(/^- tool\s+/,""));
+        break;
+      case "log": if(d.text && !d.text.startsWith("- tool")) log(d.text); break;
+      case "answer": el("answer").textContent = d.text; el("answerBox").hidden = false; break;
+      case "error": log("错误：" + d.text); break;
+      case "done":
+        STEP_IDS.forEach(i => { const n = el("step-"+i); if(n && n.className.includes("running")) setStep(i, "done"); });
+        el("phaseText").textContent = d.ok ? "· 执行完成" : "· 执行结束（有错误）";
+        es.close(); es = null; busy = false; el("start").disabled = false; break;
+    }
+  };
+  es.onerror = () => { log("连接中断"); if(es){ es.close(); es = null; } busy = false; el("start").disabled = false; };
+};
+
+function renderSensorDetails(d){
+  log("[读取] 共 " + d.samples + " 个采样点；最新读数已更新到左侧面板");
+}
+function renderDiagnosis(d){
+  if(d.status === "normal"){
+    el("diagFault").textContent = "设备健康";
+    el("sevBadge").innerHTML = badge("b-normal","normal");
+    el("diagEvidence").innerHTML = "<li>未检测到持续性异常</li>";
+    el("diagActions").innerHTML = "<li>保持状态监测，无需维修</li>";
+    return;
+  }
+  const p = d.primary || {};
+  el("diagFault").textContent = p.name || d.verdict;
+  el("diagConf").textContent = p.confidence != null ? ("置信度 " + p.confidence + " · 匹配 " + (p.signature_match||"")) : "";
+  el("diagEvidence").innerHTML = (p.evidence||[]).map(e =>
+    "<li>" + e.label + "：偏移 " + e.observed_shift_sigma + "σ（预期" + e.expected_direction + "）" +
+    (e.matched ? " ✓" : " ✗") + "</li>").join("") || "<li>—</li>";
+  el("diagActions").innerHTML = (p.recommended_actions||[]).map(a => "<li>" + a + "</li>").join("") || "<li>—</li>";
+}
+function renderPlan(d){
+  if(d.skipped){ el("planBox").textContent = "设备健康，无需维修方案"; return; }
+  el("planBox").innerHTML =
+    "<div style='margin-bottom:6px'><b>" + (d.verdict||"") + "</b> · " + (d.downtime_label||"") +
+    (d.estimated_hours ? " · 预计 " + d.estimated_hours + " 小时" : "") + "</div>" +
+    "<ul class='tight'>" + (d.steps||[]).map(s => "<li>" + s.seq + ". " + s.action + "</li>").join("") + "</ul>" +
+    "<div class='hint'>涉及备件：" + (d.parts||[]).join("、") + "</div>";
+}
+function renderVerify(d){
+  const rows = obj => Object.entries(obj||{}).map(([k,v]) =>
+    "<tr><td>" + k + "</td><td>" + v + "σ</td></tr>").join("") || "<tr><td>—</td><td>—</td></tr>";
+  el("beforeShifts").innerHTML = rows(d.before_shifts);
+  el("afterShifts").innerHTML = rows(d.after_shifts);
+  const ok = d.status === "success";
+  el("verifyStatus").innerHTML = (ok ? "✅ 维修成功" : "⚠️ 未通过") +
+    badge(ok ? "b-ok" : "b-bad", d.status) +
+    '<div class="hint" style="margin-top:6px">健康度 ' + (d.health ? d.health.before + " → " + d.health.after : "—") +
+    (d.worst_residual_sigma != null ? " · 最大残留 " + d.worst_residual_sigma + "σ" : "") + "</div>";
+  el("verifyNote").textContent = d.verdict || "";
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+{
+  "asset": "轴承磨损：摩擦增大，轴承温度与振动同步上升",
+  "generated_at": "2026-10-09T15:32:51",
+  "sampling_hz": 1.0,
+  "files": [
+    {
+      "file": "test_01_normal.csv",
+      "case": "正常设备",
+      "description": "健康基线，无故障",
+      "expected_detect": "normal",
+      "expected_diagnosis": null,
+      "expected_verify": "无需维修"
+    },
+    {
+      "file": "test_02_bearing_fault.csv",
+      "case": "模拟轴承异常",
+      "description": "轴承磨损（滚动体/滚道损伤），满强度，第 180 秒起故障显现",
+      "expected_detect": "critical",
+      "expected_diagnosis": "bearing_wear",
+      "expected_verify": "维修后应 success"
+    },
+    {
+      "file": "test_03_repair_failed.csv",
+      "case": "模拟维修失败",
+      "description": "对「模拟轴承异常」数据按 40% 修复度维修后的复测数据，残留 60% 故障特征",
+      "expected_detect": "critical（以 test_02 为基线对比）",
+      "expected_diagnosis": "bearing_wear（残留）",
+      "expected_verify": "failed / partial（未通过）",
+      "paired_before": "test_02_bearing_fault.csv"
+    }
+  ]
+}

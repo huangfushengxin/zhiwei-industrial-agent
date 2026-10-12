@@ -1,0 +1,72 @@
+{
+  "asset": "离心泵机组 P-101（电机 + 联轴器 + 离心泵 + 轴承座）",
+  "sampling_hz": 1.0,
+  "samples_per_scenario": 600,
+  "columns": [
+    "timestamp",
+    "temperature_c",
+    "vibration_mm_s",
+    "speed_rpm",
+    "current_a",
+    "pressure_mpa",
+    "flow_m3h"
+  ],
+  "units": {
+    "temperature_c": "°C",
+    "vibration_mm_s": "mm/s",
+    "speed_rpm": "rpm",
+    "current_a": "A",
+    "pressure_mpa": "MPa",
+    "flow_m3h": "m³/h"
+  },
+  "normal_baseline": {
+    "temperature_c": 62.0,
+    "vibration_mm_s": 2.1,
+    "speed_rpm": 2980.0,
+    "current_a": 42.0,
+    "pressure_mpa": 0.62,
+    "flow_m3h": 55.0
+  },
+  "scenarios": {
+    "normal": {
+      "file": "sensor_normal.csv",
+      "description": "正常运行基线（无故障）",
+      "expected_fault": null,
+      "fault_onset_s": null,
+      "fault_full_s": null,
+      "rows": 600
+    },
+    "bearing_wear": {
+      "file": "sensor_bearing_wear.csv",
+      "description": "轴承磨损：摩擦增大，轴承温度与振动同步上升",
+      "expected_fault": "bearing_wear",
+      "fault_onset_s": 180.0,
+      "fault_full_s": 360.0,
+      "rows": 600
+    },
+    "misalignment": {
+      "file": "sensor_misalignment.csv",
+      "description": "联轴器不对中 / 转子不平衡：振动剧烈上升，温度次之",
+      "expected_fault": "misalignment",
+      "fault_onset_s": 180.0,
+      "fault_full_s": 330.0,
+      "rows": 600
+    },
+    "overload": {
+      "file": "sensor_overload.csv",
+      "description": "负载过大 / 转动卡涩：电流与温度上升，转速下降",
+      "expected_fault": "overload",
+      "fault_onset_s": 180.0,
+      "fault_full_s": 300.0,
+      "rows": 600
+    },
+    "cavitation": {
+      "file": "sensor_cavitation.csv",
+      "description": "泵气蚀 / 入口堵塞：出口压力与流量下降，振动上升",
+      "expected_fault": "cavitation",
+      "fault_onset_s": 180.0,
+      "fault_full_s": 330.0,
+      "rows": 600
+    }
+  }
+}

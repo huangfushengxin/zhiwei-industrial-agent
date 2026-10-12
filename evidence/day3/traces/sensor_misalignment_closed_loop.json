@@ -1,0 +1,160 @@
+{
+  "tool": "closed_loop",
+  "status": "repaired",
+  "verdict": "闭环完成：经过 1 次维修，设备已恢复健康（健康度 100）",
+  "input_file": "sensor_misalignment.csv",
+  "asset": "离心泵机组 P-101（电机 + 联轴器 + 离心泵 + 轴承座）",
+  "fault": "misalignment",
+  "fault_name": "联轴器不对中 / 转子不平衡",
+  "health_index_before": 25,
+  "health_index_after": 100,
+  "repair_plan": {
+    "downtime": "offline",
+    "downtime_label": "需停机检修",
+    "estimated_hours": 4.0,
+    "steps": [
+      {
+        "seq": 1,
+        "action": "停机断电挂牌，拆除联轴器防护罩",
+        "tool": "LOTO 锁具、内六角扳手组",
+        "acceptance": "设备完全静止，防护罩完好拆除"
+      },
+      {
+        "seq": 2,
+        "action": "检查联轴器弹性块磨损与地脚螺栓紧固状态",
+        "tool": "扭矩扳手、塞尺",
+        "acceptance": "磨损量与力矩值有记录"
+      },
+      {
+        "seq": 3,
+        "action": "用激光对中仪复测径向与角向偏差",
+        "tool": "激光对中仪",
+        "acceptance": "偏差实测值有记录"
+      },
+      {
+        "seq": 4,
+        "action": "通过调整垫片与地脚螺栓完成对中",
+        "tool": "垫片组、扭矩扳手",
+        "acceptance": "径向偏差 ≤ 0.05 mm，角向 ≤ 0.03 mm/100 mm"
+      },
+      {
+        "seq": 5,
+        "action": "按规定力矩紧固地脚螺栓并复测对中",
+        "tool": "扭矩扳手、激光对中仪",
+        "acceptance": "力矩达标且对中复测合格"
+      },
+      {
+        "seq": 6,
+        "action": "必要时做转子动平衡（更换配重）",
+        "tool": "动平衡仪、配重块",
+        "acceptance": "残余不平衡量在允许范围内"
+      },
+      {
+        "seq": 7,
+        "action": "复装防护罩，试运行并复测振动",
+        "tool": "测振仪",
+        "acceptance": "振动回到基线 +4σ 以内"
+      }
+    ],
+    "parts": [
+      "联轴器弹性块",
+      "地脚螺栓",
+      "平衡块"
+    ],
+    "safety": [
+      "执行断电挂牌上锁（LOTO），防止联轴器意外转动",
+      "拆除防护罩前确认设备完全静止",
+      "工具与垫片系防坠绳，避免落入运转腔体"
+    ]
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "effectiveness": 1.0,
+      "replan_reason": null,
+      "repair_csv": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\repairs\\sensor_misalignment_repair_e1.00_a1.csv",
+      "verify_status": "success",
+      "verdict": "维修成功：设备已恢复到健康基线",
+      "worst_residual_sigma": 1.41,
+      "health_index": 100,
+      "residual_fault": null,
+      "residual_shifts_sigma": {
+        "轴承温度": -1.41,
+        "振动速度": -0.94,
+        "转速": -0.9,
+        "电机电流": -0.53,
+        "出口压力": -0.4,
+        "出口流量": 0.04
+      }
+    }
+  ],
+  "trace": [
+    {
+      "step": "read_data",
+      "status": "ok",
+      "detail": {
+        "file": "sensor_misalignment.csv",
+        "samples": 600
+      },
+      "at": "2026-10-09T10:26:16"
+    },
+    {
+      "step": "detect_anomalies",
+      "status": "anomaly",
+      "detail": {
+        "severity": "critical",
+        "affected_sensors": [
+          "temperature_c",
+          "vibration_mm_s",
+          "current_a"
+        ],
+        "max_abs_shift_z": 126.13
+      },
+      "at": "2026-10-09T10:26:16"
+    },
+    {
+      "step": "diagnose_fault",
+      "status": "diagnosed",
+      "detail": {
+        "verdict": "联轴器不对中 / 转子不平衡",
+        "confidence": 1.0
+      },
+      "at": "2026-10-09T10:26:16"
+    },
+    {
+      "step": "plan_repair",
+      "status": "planned",
+      "detail": {
+        "fault": "misalignment",
+        "downtime": "offline",
+        "steps": 7,
+        "estimated_hours": 4.0
+      },
+      "at": "2026-10-09T10:26:16"
+    },
+    {
+      "step": "simulate_repair",
+      "status": "simulated",
+      "detail": {
+        "attempt": 1,
+        "effectiveness": 1.0,
+        "output_csv": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\repairs\\sensor_misalignment_repair_e1.00_a1.csv"
+      },
+      "at": "2026-10-09T10:26:17"
+    },
+    {
+      "step": "verify_repair",
+      "status": "success",
+      "detail": {
+        "attempt": 1,
+        "verdict": "维修成功：设备已恢复到健康基线",
+        "worst_residual_sigma": 1.41,
+        "health_index": 100
+      },
+      "at": "2026-10-09T10:26:17"
+    }
+  ],
+  "next_step": "归档本次闭环记录（trace 可作为 Agent 执行时间线）",
+  "started_at": "2026-10-09T10:26:16",
+  "finished_at": "2026-10-09T10:26:17"
+}

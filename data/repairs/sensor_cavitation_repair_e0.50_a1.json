@@ -1,0 +1,38 @@
+{
+  "tool": "simulate_repair",
+  "created_at": "2026-10-09T14:08:15",
+  "source_file": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\sensor_cavitation.csv",
+  "source_name": "sensor_cavitation.csv",
+  "output_csv": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\repairs\\sensor_cavitation_repair_e0.50_a1.csv",
+  "fault": "cavitation",
+  "fault_name": "泵气蚀 / 入口堵塞",
+  "repair_target": "cavitation",
+  "repair_target_name": null,
+  "addressed_sensors": [
+    "flow_m3h",
+    "pressure_mpa",
+    "temperature_c",
+    "vibration_mm_s"
+  ],
+  "effectiveness": 0.5,
+  "attempt": 1,
+  "seed": 20261010,
+  "samples": 600,
+  "start_time": "2026-10-09T08:10:59",
+  "estimated_fault_offset": {
+    "temperature_c": 3.94,
+    "vibration_mm_s": 4.915,
+    "speed_rpm": -2.965,
+    "current_a": -0.135,
+    "pressure_mpa": -0.2775,
+    "flow_m3h": -22.595
+  },
+  "residual_offset": {
+    "temperature_c": 1.97,
+    "vibration_mm_s": 2.4575,
+    "speed_rpm": -2.965,
+    "current_a": -0.135,
+    "pressure_mpa": -0.1387,
+    "flow_m3h": -11.2975
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "tool": "simulate_repair",
+  "created_at": "2026-10-09T15:03:22",
+  "source_file": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\uploads\\M-001_20261009-150257.csv",
+  "source_name": "M-001_20261009-150257.csv",
+  "output_csv": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\repairs\\M-001_20261009-150257_repair_e1.00_a1.csv",
+  "fault": "overload",
+  "fault_name": "负载过大 / 转动部件卡涩",
+  "repair_target": "overload",
+  "repair_target_name": null,
+  "addressed_sensors": [
+    "current_a",
+    "speed_rpm",
+    "temperature_c",
+    "vibration_mm_s"
+  ],
+  "effectiveness": 1.0,
+  "attempt": 1,
+  "seed": 20261009,
+  "samples": 600,
+  "start_time": "2026-10-09T08:10:59",
+  "estimated_fault_offset": {
+    "temperature_c": 12.96,
+    "vibration_mm_s": 2.545,
+    "speed_rpm": -77.71,
+    "current_a": 15.245,
+    "pressure_mpa": 0.001,
+    "flow_m3h": 0.05
+  },
+  "residual_offset": {
+    "temperature_c": 0.0,
+    "vibration_mm_s": 0.0,
+    "speed_rpm": -2.71,
+    "current_a": 0.0,
+    "pressure_mpa": 0.001,
+    "flow_m3h": 0.05
+  }
+}

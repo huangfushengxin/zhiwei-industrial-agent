@@ -1,0 +1,64 @@
+{
+  "tool": "validate_pipeline",
+  "asset": "离心泵机组 P-101（电机 + 联轴器 + 离心泵 + 轴承座）",
+  "total": 5,
+  "passed": 5,
+  "accuracy": 1.0,
+  "results": [
+    {
+      "scenario": "normal",
+      "file": "sensor_normal.csv",
+      "expected_fault": null,
+      "detected_status": "normal",
+      "severity": "normal",
+      "diagnosed_fault": null,
+      "confidence": null,
+      "health_index": 100,
+      "correct": true
+    },
+    {
+      "scenario": "bearing_wear",
+      "file": "sensor_bearing_wear.csv",
+      "expected_fault": "bearing_wear",
+      "detected_status": "anomaly",
+      "severity": "critical",
+      "diagnosed_fault": "bearing_wear",
+      "confidence": 0.993,
+      "health_index": 25,
+      "correct": true
+    },
+    {
+      "scenario": "misalignment",
+      "file": "sensor_misalignment.csv",
+      "expected_fault": "misalignment",
+      "detected_status": "anomaly",
+      "severity": "critical",
+      "diagnosed_fault": "misalignment",
+      "confidence": 1.0,
+      "health_index": 25,
+      "correct": true
+    },
+    {
+      "scenario": "overload",
+      "file": "sensor_overload.csv",
+      "expected_fault": "overload",
+      "detected_status": "anomaly",
+      "severity": "critical",
+      "diagnosed_fault": "overload",
+      "confidence": 0.933,
+      "health_index": 20,
+      "correct": true
+    },
+    {
+      "scenario": "cavitation",
+      "file": "sensor_cavitation.csv",
+      "expected_fault": "cavitation",
+      "detected_status": "anomaly",
+      "severity": "critical",
+      "diagnosed_fault": "cavitation",
+      "confidence": 0.946,
+      "health_index": 10,
+      "correct": true
+    }
+  ]
+}

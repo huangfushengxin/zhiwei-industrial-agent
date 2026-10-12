@@ -1,0 +1,201 @@
+{
+  "tool": "closed_loop",
+  "status": "repaired",
+  "verdict": "闭环完成：经过 2 次维修，设备已恢复健康（健康度 100）",
+  "input_file": "sensor_overload.csv",
+  "asset": "离心泵机组 P-101（电机 + 联轴器 + 离心泵 + 轴承座）",
+  "fault": "overload",
+  "fault_name": "负载过大 / 转动部件卡涩",
+  "health_index_before": 20,
+  "health_index_after": 100,
+  "repair_plan": {
+    "downtime": "conditional",
+    "downtime_label": "先在线降载排查，必要时停机",
+    "estimated_hours": 3.0,
+    "steps": [
+      {
+        "seq": 1,
+        "action": "核对工艺负载与出口阀门开度，确认是否超出设计工况",
+        "tool": "DCS 参数、现场阀位、工艺参数表",
+        "acceptance": "负载回到设计范围内"
+      },
+      {
+        "seq": 2,
+        "action": "检查电机保护定值与电流记录，必要时修正定值",
+        "tool": "保护测试仪",
+        "acceptance": "定值与铭牌/设计一致"
+      },
+      {
+        "seq": 3,
+        "action": "降载运行并观察电流与温度趋势",
+        "tool": "钳形电流表、红外测温仪",
+        "acceptance": "电流回落，温度不再上升"
+      },
+      {
+        "seq": 4,
+        "action": "手动盘车排查转动部件卡涩、异物或结垢",
+        "tool": "盘车工具、工业内窥镜",
+        "acceptance": "盘车顺畅无卡涩"
+      },
+      {
+        "seq": 5,
+        "action": "清理叶轮与管路的结垢、异物",
+        "tool": "高压水枪、清洗剂",
+        "acceptance": "流道通畅，无异物残留"
+      },
+      {
+        "seq": 6,
+        "action": "复装后带载试运行，复测电流、温度、转速",
+        "tool": "钳形电流表、测振仪、转速表",
+        "acceptance": "各测点回到基线 +4σ 以内"
+      }
+    ],
+    "parts": [
+      "出口阀门",
+      "电机保护器",
+      "叶轮"
+    ],
+    "safety": [
+      "先在线降载排查，涉及拆检时必须断电挂牌上锁（LOTO）",
+      "拆检前泄压排空，确认介质温度已降至安全范围",
+      "清理结垢时佩戴防护面罩与耐腐蚀手套"
+    ]
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "effectiveness": 0.5,
+      "replan_reason": null,
+      "repair_csv": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\repairs\\sensor_overload_repair_e0.50_a1.csv",
+      "verify_status": "partial",
+      "verdict": "部分修复：异常显著减轻但仍有残留故障",
+      "worst_residual_sigma": 17.86,
+      "health_index": 20,
+      "residual_fault": "负载过大 / 转动部件卡涩",
+      "residual_shifts_sigma": {
+        "轴承温度": 15.11,
+        "振动速度": 14.9,
+        "转速": -11.99,
+        "电机电流": 17.86,
+        "出口压力": 0.17,
+        "出口流量": 0.15
+      }
+    },
+    {
+      "attempt": 2,
+      "effectiveness": 1.0,
+      "replan_reason": "第 1 次验证未通过（残留 17.86σ），重新规划：提高维修彻底度至 effectiveness=1.00",
+      "repair_csv": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\repairs\\sensor_overload_repair_e1.00_a2.csv",
+      "verify_status": "success",
+      "verdict": "维修成功：设备已恢复到健康基线",
+      "worst_residual_sigma": 1.4,
+      "health_index": 100,
+      "residual_fault": null,
+      "residual_shifts_sigma": {
+        "轴承温度": -1.36,
+        "振动速度": -0.8,
+        "转速": -1.4,
+        "电机电流": -0.41,
+        "出口压力": 0.51,
+        "出口流量": -0.13
+      }
+    }
+  ],
+  "trace": [
+    {
+      "step": "read_data",
+      "status": "ok",
+      "detail": {
+        "file": "sensor_overload.csv",
+        "samples": 600
+      },
+      "at": "2026-10-09T18:11:26"
+    },
+    {
+      "step": "detect_anomalies",
+      "status": "anomaly",
+      "detail": {
+        "severity": "critical",
+        "affected_sensors": [
+          "temperature_c",
+          "vibration_mm_s",
+          "speed_rpm",
+          "current_a"
+        ],
+        "max_abs_shift_z": 38.04
+      },
+      "at": "2026-10-09T18:11:26"
+    },
+    {
+      "step": "diagnose_fault",
+      "status": "diagnosed",
+      "detail": {
+        "verdict": "负载过大 / 转动部件卡涩",
+        "confidence": 0.936
+      },
+      "at": "2026-10-09T18:11:26"
+    },
+    {
+      "step": "plan_repair",
+      "status": "planned",
+      "detail": {
+        "fault": "overload",
+        "downtime": "conditional",
+        "steps": 6,
+        "estimated_hours": 3.0
+      },
+      "at": "2026-10-09T18:11:26"
+    },
+    {
+      "step": "simulate_repair",
+      "status": "simulated",
+      "detail": {
+        "attempt": 1,
+        "effectiveness": 0.5,
+        "output_csv": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\repairs\\sensor_overload_repair_e0.50_a1.csv"
+      },
+      "at": "2026-10-09T18:11:26"
+    },
+    {
+      "step": "verify_repair",
+      "status": "partial",
+      "detail": {
+        "attempt": 1,
+        "verdict": "部分修复：异常显著减轻但仍有残留故障",
+        "worst_residual_sigma": 17.86,
+        "health_index": 20
+      },
+      "at": "2026-10-09T18:11:27"
+    },
+    {
+      "step": "replan",
+      "status": "replanned",
+      "detail": "第 1 次验证未通过（残留 17.86σ），重新规划：提高维修彻底度至 effectiveness=1.00",
+      "at": "2026-10-09T18:11:27"
+    },
+    {
+      "step": "simulate_repair",
+      "status": "simulated",
+      "detail": {
+        "attempt": 2,
+        "effectiveness": 1.0,
+        "output_csv": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\repairs\\sensor_overload_repair_e1.00_a2.csv"
+      },
+      "at": "2026-10-09T18:11:27"
+    },
+    {
+      "step": "verify_repair",
+      "status": "success",
+      "detail": {
+        "attempt": 2,
+        "verdict": "维修成功：设备已恢复到健康基线",
+        "worst_residual_sigma": 1.4,
+        "health_index": 100
+      },
+      "at": "2026-10-09T18:11:27"
+    }
+  ],
+  "next_step": "归档本次闭环记录（trace 可作为 Agent 执行时间线）",
+  "started_at": "2026-10-09T18:11:26",
+  "finished_at": "2026-10-09T18:11:27"
+}

@@ -1,0 +1,155 @@
+{
+  "tool": "closed_loop",
+  "status": "repaired",
+  "verdict": "闭环完成：经过 1 次维修，设备已恢复健康（健康度 100）",
+  "input_file": "sensor_cavitation.csv",
+  "asset": "离心泵机组 P-101（电机 + 联轴器 + 离心泵 + 轴承座）",
+  "fault": "cavitation",
+  "fault_name": "泵气蚀 / 入口堵塞",
+  "health_index_before": 10,
+  "health_index_after": 100,
+  "repair_plan": {
+    "downtime": "conditional",
+    "downtime_label": "先在线降载排查，必要时停机",
+    "estimated_hours": 3.5,
+    "steps": [
+      {
+        "seq": 1,
+        "action": "检查入口过滤器压差，判断是否堵塞",
+        "tool": "差压表 / 差压变送器",
+        "acceptance": "压差实测值有记录"
+      },
+      {
+        "seq": 2,
+        "action": "清洗或更换堵塞的滤网",
+        "tool": "清洗工具、备用滤网",
+        "acceptance": "滤网压差回到设计值"
+      },
+      {
+        "seq": 3,
+        "action": "确认吸入液位与有效汽蚀余量（NPSHa）满足要求",
+        "tool": "液位计、工艺计算表",
+        "acceptance": "NPSHa > NPSHr + 安全余量"
+      },
+      {
+        "seq": 4,
+        "action": "泵体排气，检查入口管路是否漏气",
+        "tool": "排气阀、发泡剂",
+        "acceptance": "排气彻底，管路无泄漏"
+      },
+      {
+        "seq": 5,
+        "action": "检查叶轮气蚀损伤，必要时修磨或更换",
+        "tool": "工业内窥镜、角磨机",
+        "acceptance": "叶片无严重蜂窝状损伤"
+      },
+      {
+        "seq": 6,
+        "action": "恢复运行并逐步开阀，复测压力、流量与振动",
+        "tool": "压力表、流量计、测振仪",
+        "acceptance": "压力与流量回到基线 +4σ 以内"
+      }
+    ],
+    "parts": [
+      "入口过滤器",
+      "入口管路密封",
+      "叶轮"
+    ],
+    "safety": [
+      "涉及拆检入口管路时必须断电挂牌上锁（LOTO）并泄压排空",
+      "确认介质温度与腐蚀性，佩戴对应防护用品",
+      "排气作业时人员避开泵体正上方，防止汽水喷溅"
+    ]
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "effectiveness": 1.0,
+      "replan_reason": null,
+      "repair_csv": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\repairs\\sensor_cavitation_repair_e1.00_a1.csv",
+      "verify_status": "success",
+      "verdict": "维修成功：设备已恢复到健康基线",
+      "worst_residual_sigma": 1.69,
+      "health_index": 100,
+      "residual_fault": null,
+      "residual_shifts_sigma": {
+        "轴承温度": -1.69,
+        "振动速度": -0.92,
+        "转速": -0.66,
+        "电机电流": -0.36,
+        "出口压力": -0.17,
+        "出口流量": 0.17
+      }
+    }
+  ],
+  "trace": [
+    {
+      "step": "read_data",
+      "status": "ok",
+      "detail": {
+        "file": "sensor_cavitation.csv",
+        "samples": 600
+      },
+      "at": "2026-10-09T10:26:18"
+    },
+    {
+      "step": "detect_anomalies",
+      "status": "anomaly",
+      "detail": {
+        "severity": "critical",
+        "affected_sensors": [
+          "temperature_c",
+          "vibration_mm_s",
+          "pressure_mpa",
+          "flow_m3h"
+        ],
+        "max_abs_shift_z": 62.85
+      },
+      "at": "2026-10-09T10:26:18"
+    },
+    {
+      "step": "diagnose_fault",
+      "status": "diagnosed",
+      "detail": {
+        "verdict": "泵气蚀 / 入口堵塞",
+        "confidence": 0.946
+      },
+      "at": "2026-10-09T10:26:18"
+    },
+    {
+      "step": "plan_repair",
+      "status": "planned",
+      "detail": {
+        "fault": "cavitation",
+        "downtime": "conditional",
+        "steps": 6,
+        "estimated_hours": 3.5
+      },
+      "at": "2026-10-09T10:26:18"
+    },
+    {
+      "step": "simulate_repair",
+      "status": "simulated",
+      "detail": {
+        "attempt": 1,
+        "effectiveness": 1.0,
+        "output_csv": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\repairs\\sensor_cavitation_repair_e1.00_a1.csv"
+      },
+      "at": "2026-10-09T10:26:18"
+    },
+    {
+      "step": "verify_repair",
+      "status": "success",
+      "detail": {
+        "attempt": 1,
+        "verdict": "维修成功：设备已恢复到健康基线",
+        "worst_residual_sigma": 1.69,
+        "health_index": 100
+      },
+      "at": "2026-10-09T10:26:19"
+    }
+  ],
+  "next_step": "归档本次闭环记录（trace 可作为 Agent 执行时间线）",
+  "started_at": "2026-10-09T10:26:18",
+  "finished_at": "2026-10-09T10:26:19"
+}

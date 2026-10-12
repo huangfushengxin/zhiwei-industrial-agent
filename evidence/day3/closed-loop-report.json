@@ -1,0 +1,88 @@
+{
+  "tool": "validate_closed_loop",
+  "total": 6,
+  "passed": 6,
+  "accuracy": 1.0,
+  "results": [
+    {
+      "case": "A_正常设备",
+      "scenario": "normal",
+      "effectiveness": 1.0,
+      "status": "healthy",
+      "attempts": 0,
+      "health_after": 100,
+      "expected": "healthy / 0 次",
+      "correct": true,
+      "verdict": "设备健康，未触发维修闭环"
+    },
+    {
+      "case": "B_一次修好",
+      "scenario": "bearing_wear",
+      "effectiveness": 1.0,
+      "status": "repaired",
+      "attempts": 1,
+      "health_after": 100,
+      "expected": "repaired / 1 次",
+      "correct": true,
+      "verdict": "闭环完成：经过 1 次维修，设备已恢复健康（健康度 100）"
+    },
+    {
+      "case": "B_一次修好",
+      "scenario": "misalignment",
+      "effectiveness": 1.0,
+      "status": "repaired",
+      "attempts": 1,
+      "health_after": 100,
+      "expected": "repaired / 1 次",
+      "correct": true,
+      "verdict": "闭环完成：经过 1 次维修，设备已恢复健康（健康度 100）"
+    },
+    {
+      "case": "B_一次修好",
+      "scenario": "overload",
+      "effectiveness": 1.0,
+      "status": "repaired",
+      "attempts": 1,
+      "health_after": 100,
+      "expected": "repaired / 1 次",
+      "correct": true,
+      "verdict": "闭环完成：经过 1 次维修，设备已恢复健康（健康度 100）"
+    },
+    {
+      "case": "B_一次修好",
+      "scenario": "cavitation",
+      "effectiveness": 1.0,
+      "status": "repaired",
+      "attempts": 1,
+      "health_after": 100,
+      "expected": "repaired / 1 次",
+      "correct": true,
+      "verdict": "闭环完成：经过 1 次维修，设备已恢复健康（健康度 100）"
+    },
+    {
+      "case": "C_失败重规划",
+      "scenario": "overload",
+      "effectiveness": 0.5,
+      "status": "repaired",
+      "attempts": 2,
+      "health_after": 100,
+      "expected": "第1次失败 / 第2次成功",
+      "correct": true,
+      "verdict": "闭环完成：经过 2 次维修，设备已恢复健康（健康度 100）",
+      "attempt_detail": [
+        {
+          "attempt": 1,
+          "effectiveness": 0.5,
+          "verify": "partial",
+          "residual_sigma": 17.86
+        },
+        {
+          "attempt": 2,
+          "effectiveness": 1.0,
+          "verify": "success",
+          "residual_sigma": 1.36
+        }
+      ]
+    }
+  ]
+}
