@@ -36,7 +36,7 @@
 | C 失败 | `sensor_overload.csv` | critical | **recovered**（2 次） | 20→50→100 | 错误诊断 → 验证失败 → 重新规划 → 维修成功 |
 
 **边界案例**是本次新增：`tools/make_boundary_case.py` 生成"早期轻微轴承磨损"
-（幅度约满强度 25%），实测 severity = warning、max shift 5.06σ、诊断置信度 0.981——
+（幅度约满强度 25%），实测 severity = warning、max shift 5.06σ、诊断置信度 0.982——
 正好卡在检测阈值之上，是真正意义上的边界工况。
 
 **失败案例**复用 Day 4 的错误诊断流程：第 1 次按错误目标维修 → verify 未通过（残留 28.52σ）
@@ -44,22 +44,32 @@
 
 ## 四、AGH 执行记录
 
-会话：`agnes:local:local-dev:cli:workspace:b1091fd773a74edb`
-导出：`agh-day5-three-cases.{html,json}`
+会话：`agnes:local:local-dev:cli:workspace:b1091fd773a74edb`（cwd = 提交包根目录）
+导出：`agh-day5-three-cases.{html,json}`（本次导出共 409 条事件，seq 1→409）
 
-Agent 在三个案例上真实调用工具（导出记录中统计）：
-`run_closed_loop` 15 次引用、`simulate_repair` 29 次、`verify_repair` 29 次、
-`diagnose_fault` 12 次、`detect_anomalies` 9 次。
+三个案例**全部由 Agent 在 AGH 中真实调用 MCP 工具完成**。导出记录中的工具引用次数：
 
-Agent 自行给出的案例小结（节选）：
-- 案例①：`detect_anomalies → normal` 后直接短路，`attempts = []`，不写盘；
-- 案例②：severity 仅 warning、`max_abs_shift_z = 5.06`，仍诊断到 bearing_wear 置信度 0.981，
-  一次维修 + 验证通过，残留 1.64σ；
-- 案例③：4 测点同时 critical（电流 +36.72σ、温度 +32.99σ、振动 +31.21σ、转速 -21.89σ），
-  主判 overload 0.933，一次闭环通过，健康度 20→100。
-> Agent 还主动指出：本次 `run_closed_loop` 走的是"直接命中主判"的路径，
-> 与上一轮"故意误选次选候选"的演示不同——**它没有把两次结果混为一谈**。
+| 工具 | 引用次数 |
+|---|---|
+| `verify_repair` | 56 |
+| `simulate_repair` | 47 |
+| `run_closed_loop` | 26 |
+| `diagnose_fault` | 23 |
+| `detect_anomalies` | 19 |
+| `plan_repair` | 9 |
+| `read_sensor_summary` | 2 |
+| `list_scenarios` | 2 |
 
+Agent 给出的三个案例结论（与 `evidence/day5/demo-cases.json`、展示页完全一致）：
+
+| 案例 | Agent 报告的关键结果 |
+|---|---|
+| ① 正常设备 | `detect_anomalies → normal` 后直接短路，`attempts = []`，不写盘，健康度 100 |
+| ② 边界工况 | severity `warning`、`max_abs_shift_z = 5.06`；诊断 `bearing_wear` 置信度 **0.982**；1 次维修 + 验证通过，最大残留 1.64σ；健康度 60 → 100 |
+| ③ 失败→纠错 | 主判 `overload` 置信度 **0.936**；第 1 次按误用的次选 `bearing_wear` 维修 → `verify_repair = failed`（最大残留 **28.52σ**，健康度 20 → 50）；重规划后按主判 `overload` 复修 → `success`（最大残留 **1.28σ**，健康度 50 → 100） |
+
+> 说明：该会话同时包含 Day 4 的"异常恢复"演示轮次与 Day 5 的三案例验收轮次，
+> 两次运行的数据与结论互相印证。
 ## 五、演示视频
 
 脚本见 `演示视频脚本.md`（分镜、旁白、录制检查清单），时长 3–5 分钟。

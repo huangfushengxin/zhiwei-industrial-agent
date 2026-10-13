@@ -109,7 +109,7 @@
         "file": "sensor_overload.csv",
         "samples": 600
       },
-      "at": "2026-10-13T18:27:04"
+      "at": "2026-10-13T19:26:59"
     },
     {
       "step": "detect_anomalies",
@@ -124,7 +124,7 @@
         ],
         "max_abs_shift_z": 38.04
       },
-      "at": "2026-10-13T18:27:04"
+      "at": "2026-10-13T19:26:59"
     },
     {
       "step": "diagnose_fault",
@@ -133,7 +133,7 @@
         "verdict": "负载过大 / 转动部件卡涩",
         "confidence": 0.936
       },
-      "at": "2026-10-13T18:27:04"
+      "at": "2026-10-13T19:26:59"
     },
     {
       "step": "plan_repair",
@@ -144,7 +144,7 @@
         "steps": 6,
         "estimated_hours": 3.0
       },
-      "at": "2026-10-13T18:27:04"
+      "at": "2026-10-13T19:26:59"
     },
     {
       "step": "simulate_repair",
@@ -154,7 +154,7 @@
         "effectiveness": 0.5,
         "output_csv": "data\\repairs\\sensor_overload_repair_e0.50_a1.csv"
       },
-      "at": "2026-10-13T18:27:04"
+      "at": "2026-10-13T19:26:59"
     },
     {
       "step": "verify_repair",
@@ -165,13 +165,13 @@
         "worst_residual_sigma": 17.86,
         "health_index": 20
       },
-      "at": "2026-10-13T18:27:04"
+      "at": "2026-10-13T19:27:00"
     },
     {
       "step": "replan",
       "status": "replanned",
       "detail": "第 1 次验证未通过（残留 17.86σ），重新规划：提高维修彻底度至 effectiveness=1.00",
-      "at": "2026-10-13T18:27:04"
+      "at": "2026-10-13T19:27:00"
     },
     {
       "step": "simulate_repair",
@@ -181,7 +181,7 @@
         "effectiveness": 1.0,
         "output_csv": "data\\repairs\\sensor_overload_repair_e1.00_a2.csv"
       },
-      "at": "2026-10-13T18:27:04"
+      "at": "2026-10-13T19:27:00"
     },
     {
       "step": "verify_repair",
@@ -192,10 +192,10 @@
         "worst_residual_sigma": 1.4,
         "health_index": 100
       },
-      "at": "2026-10-13T18:27:04"
+      "at": "2026-10-13T19:27:00"
     }
   ],
   "next_step": "归档本次闭环记录（trace 可作为 Agent 执行时间线）",
-  "started_at": "2026-10-13T18:27:04",
-  "finished_at": "2026-10-13T18:27:04"
+  "started_at": "2026-10-13T19:26:59",
+  "finished_at": "2026-10-13T19:27:00"
 }

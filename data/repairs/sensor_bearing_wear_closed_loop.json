@@ -96,7 +96,7 @@
         "file": "sensor_bearing_wear.csv",
         "samples": 600
       },
-      "at": "2026-10-13T18:27:03"
+      "at": "2026-10-13T19:26:57"
     },
     {
       "step": "detect_anomalies",
@@ -110,7 +110,7 @@
         ],
         "max_abs_shift_z": 86.47
       },
-      "at": "2026-10-13T18:27:03"
+      "at": "2026-10-13T19:26:57"
     },
     {
       "step": "diagnose_fault",
@@ -119,7 +119,7 @@
         "verdict": "轴承磨损（滚动体 / 滚道损伤）",
         "confidence": 0.986
       },
-      "at": "2026-10-13T18:27:03"
+      "at": "2026-10-13T19:26:57"
     },
     {
       "step": "plan_repair",
@@ -130,7 +130,7 @@
         "steps": 7,
         "estimated_hours": 6.0
       },
-      "at": "2026-10-13T18:27:03"
+      "at": "2026-10-13T19:26:57"
     },
     {
       "step": "simulate_repair",
@@ -140,7 +140,7 @@
         "effectiveness": 1.0,
         "output_csv": "data\\repairs\\sensor_bearing_wear_repair_e1.00_a1.csv"
       },
-      "at": "2026-10-13T18:27:03"
+      "at": "2026-10-13T19:26:57"
     },
     {
       "step": "verify_repair",
@@ -151,10 +151,10 @@
         "worst_residual_sigma": 1.8,
         "health_index": 100
       },
-      "at": "2026-10-13T18:27:03"
+      "at": "2026-10-13T19:26:57"
     }
   ],
   "next_step": "归档本次闭环记录（trace 可作为 Agent 执行时间线）",
-  "started_at": "2026-10-13T18:27:03",
-  "finished_at": "2026-10-13T18:27:03"
+  "started_at": "2026-10-13T19:26:57",
+  "finished_at": "2026-10-13T19:26:57"
 }
