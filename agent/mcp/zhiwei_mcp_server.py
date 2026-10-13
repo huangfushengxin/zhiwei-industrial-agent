@@ -251,6 +251,10 @@ def simulate_repair(csv_path: str, effectiveness: float = 1.0,
         fault = primary["fault"] if primary else None
     report = simulate_repair_impl(path, effectiveness, fault, attempt, 20261009,
                                    REPAIR_OUT_DIR, None, repair_target)
+    # 返回给 Agent 的路径用相对形式（不带本机绝对路径/用户名）；
+    # _resolve 同样支持相对路径，因此 verify_repair 可以直接用它。
+    if report.get("output_csv_rel"):
+        report["output_csv"] = report.pop("output_csv_rel")
     return _json(report)
 
 
