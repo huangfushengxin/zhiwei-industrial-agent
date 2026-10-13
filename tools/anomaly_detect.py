@@ -99,6 +99,14 @@ def find_runs(flags: list[int]) -> list[list[int]]:
     return runs
 
 
+def _display_path(value) -> str:
+    """相对项目根输出路径，避免绝对路径（含用户名）写进报告。"""
+    try:
+        return str(Path(value).resolve().relative_to(Path(__file__).resolve().parents[1]))
+    except Exception:
+        return Path(value).name
+
+
 def detect(path: Path, baseline_s: float, window_s: int, z_threshold: float,
            min_run: int, spike_threshold: float, baseline_csv: Path | None = None):
     timestamps, series = read_series(path)
@@ -119,7 +127,7 @@ def detect(path: Path, baseline_s: float, window_s: int, z_threshold: float,
     report = {
         "tool": "anomaly_detect",
         "file": path.name,
-        "path": str(path),
+        "path": _display_path(path),
         "method": "robust rolling-median residual (median/MAD)",
         "samples": n,
         "baseline_samples": baseline_count,
@@ -127,7 +135,7 @@ def detect(path: Path, baseline_s: float, window_s: int, z_threshold: float,
         "z_threshold": z_threshold,
         "spike_threshold": spike_threshold,
         "min_run": min_run,
-        "baseline_source": str(baseline_csv) if baseline_csv is not None else path.name,
+        "baseline_source": _display_path(baseline_csv) if baseline_csv is not None else path.name,
         "sensors": {},
         "anomalies": [],
         "spikes": [],

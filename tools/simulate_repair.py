@@ -38,6 +38,16 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 DEFAULT_OUT_DIR = ROOT / "data" / "repairs"
 BASELINE_SAMPLES = 120
+
+
+def _display_path(value) -> str:
+    """把路径转成相对项目根的相对路径，避免绝对路径（含用户名）进入证据文件。"""
+    try:
+        return str(Path(value).resolve().relative_to(ROOT))
+    except Exception:
+        return Path(value).name
+
+
 TAIL_FRACTION = 0.25
 GAP_SECONDS = 60  # 停机维修后复测，时间轴后移
 
@@ -125,10 +135,10 @@ def simulate(path: Path, effectiveness: float, fault: str | None, attempt: int, 
     meta = {
         "tool": "simulate_repair",
         "created_at": datetime.now().isoformat(timespec="seconds"),
-        "source_file": str(path),
+        "source_file": _display_path(path),
         "source_name": path.name,
-        "baseline_source": str(baseline_csv) if baseline_csv else None,
-        "output_csv": str(csv_path),
+        "baseline_source": _display_path(baseline_csv) if baseline_csv else None,
+        "output_csv": _display_path(csv_path),
         "fault": fault,
         "fault_name": FAULT_LIBRARY[fault]["name"] if fault in FAULT_LIBRARY else None,
         "repair_target": repair_target or fault,
@@ -155,8 +165,11 @@ def simulate(path: Path, effectiveness: float, fault: str | None, attempt: int, 
         "repair_target_name": meta["repair_target_name"],
         "effectiveness": effectiveness,
         "attempt": attempt,
+        # output_csv 供下游读写使用（真实可访问路径）；
+        # output_csv_rel / metadata_json 是给证据与展示用的相对路径（不含用户名）。
         "output_csv": str(csv_path),
-        "metadata_json": str(meta_path),
+        "output_csv_rel": _display_path(csv_path),
+        "metadata_json": _display_path(meta_path),
         "samples": n,
         "start_time": meta["start_time"],
         "estimated_fault_offset": meta["estimated_fault_offset"],

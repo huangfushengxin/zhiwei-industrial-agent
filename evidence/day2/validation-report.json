@@ -23,7 +23,7 @@
       "detected_status": "anomaly",
       "severity": "critical",
       "diagnosed_fault": "bearing_wear",
-      "confidence": 0.993,
+      "confidence": 0.986,
       "health_index": 25,
       "correct": true
     },
@@ -34,7 +34,7 @@
       "detected_status": "anomaly",
       "severity": "critical",
       "diagnosed_fault": "misalignment",
-      "confidence": 1.0,
+      "confidence": 0.999,
       "health_index": 25,
       "correct": true
     },
@@ -45,7 +45,7 @@
       "detected_status": "anomaly",
       "severity": "critical",
       "diagnosed_fault": "overload",
-      "confidence": 0.933,
+      "confidence": 0.936,
       "health_index": 20,
       "correct": true
     },
@@ -56,7 +56,7 @@
       "detected_status": "anomaly",
       "severity": "critical",
       "diagnosed_fault": "cavitation",
-      "confidence": 0.946,
+      "confidence": 0.96,
       "health_index": 10,
       "correct": true
     }

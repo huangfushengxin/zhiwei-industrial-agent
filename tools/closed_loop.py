@@ -32,6 +32,13 @@ from repair_plan import build_plan  # noqa: E402
 from simulate_repair import DEFAULT_OUT_DIR, simulate  # noqa: E402
 from verify_repair import verify  # noqa: E402
 
+def _display_path(value) -> str:
+    try:
+        return str(Path(value).resolve().relative_to(Path(__file__).resolve().parents[1]))
+    except Exception:
+        return Path(value).name
+
+
 ESCALATION_STEP = 0.5   # 每次重新规划提高的修复彻底度（唯一的调参点）
 DEFAULT_MAX_ATTEMPTS = 3
 DEFAULT_SEED = 20261009
@@ -117,7 +124,8 @@ def run(csv_path: Path, repair_effectiveness: float = 1.0,
 
         sim = simulate(csv_path, effectiveness, plan["fault"], attempt, seed + attempt, out_dir, None)
         note("simulate_repair", "simulated", {
-            "attempt": attempt, "effectiveness": effectiveness, "output_csv": sim["output_csv"],
+            "attempt": attempt, "effectiveness": effectiveness,
+            "output_csv": sim.get("output_csv_rel", sim["output_csv"]),
         })
 
         ver = verify(csv_path, Path(sim["output_csv"]), 120.0, 4.0)
@@ -132,7 +140,7 @@ def run(csv_path: Path, repair_effectiveness: float = 1.0,
             "attempt": attempt,
             "effectiveness": effectiveness,
             "replan_reason": replan_reason,
-            "repair_csv": sim["output_csv"],
+            "repair_csv": sim.get("output_csv_rel", sim["output_csv"]),
             "verify_status": ver["status"],
             "verdict": ver["verdict"],
             "worst_residual_sigma": ver["worst_residual_sigma"],
@@ -181,7 +189,7 @@ def run(csv_path: Path, repair_effectiveness: float = 1.0,
     out_dir.mkdir(parents=True, exist_ok=True)
     record_path = out_dir / f"{csv_path.stem}_closed_loop.json"
     record_path.write_text(json.dumps(record, ensure_ascii=False, indent=2), encoding="utf-8")
-    record["record_json"] = str(record_path)
+    record["record_json"] = _display_path(record_path)
     return record
 
 

@@ -66,7 +66,7 @@
       "attempt": 1,
       "effectiveness": 1.0,
       "replan_reason": null,
-      "repair_csv": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\repairs\\sensor_cavitation_repair_e1.00_a1.csv",
+      "repair_csv": "data\\repairs\\sensor_cavitation_repair_e1.00_a1.csv",
       "verify_status": "success",
       "verdict": "维修成功：设备已恢复到健康基线",
       "worst_residual_sigma": 1.69,
@@ -75,8 +75,8 @@
       "residual_shifts_sigma": {
         "轴承温度": -1.69,
         "振动速度": -0.92,
-        "转速": -0.66,
-        "电机电流": -0.36,
+        "转速": -1.34,
+        "电机电流": -0.63,
         "出口压力": -0.17,
         "出口流量": 0.17
       }
@@ -90,7 +90,7 @@
         "file": "sensor_cavitation.csv",
         "samples": 600
       },
-      "at": "2026-10-09T10:26:18"
+      "at": "2026-10-13T18:20:44"
     },
     {
       "step": "detect_anomalies",
@@ -105,16 +105,16 @@
         ],
         "max_abs_shift_z": 62.85
       },
-      "at": "2026-10-09T10:26:18"
+      "at": "2026-10-13T18:20:44"
     },
     {
       "step": "diagnose_fault",
       "status": "diagnosed",
       "detail": {
         "verdict": "泵气蚀 / 入口堵塞",
-        "confidence": 0.946
+        "confidence": 0.96
       },
-      "at": "2026-10-09T10:26:18"
+      "at": "2026-10-13T18:20:44"
     },
     {
       "step": "plan_repair",
@@ -125,7 +125,7 @@
         "steps": 6,
         "estimated_hours": 3.5
       },
-      "at": "2026-10-09T10:26:18"
+      "at": "2026-10-13T18:20:44"
     },
     {
       "step": "simulate_repair",
@@ -133,9 +133,9 @@
       "detail": {
         "attempt": 1,
         "effectiveness": 1.0,
-        "output_csv": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\repairs\\sensor_cavitation_repair_e1.00_a1.csv"
+        "output_csv": "data\\repairs\\sensor_cavitation_repair_e1.00_a1.csv"
       },
-      "at": "2026-10-09T10:26:18"
+      "at": "2026-10-13T18:20:44"
     },
     {
       "step": "verify_repair",
@@ -146,10 +146,11 @@
         "worst_residual_sigma": 1.69,
         "health_index": 100
       },
-      "at": "2026-10-09T10:26:19"
+      "at": "2026-10-13T18:20:44"
     }
   ],
   "next_step": "归档本次闭环记录（trace 可作为 Agent 执行时间线）",
-  "started_at": "2026-10-09T10:26:18",
-  "finished_at": "2026-10-09T10:26:19"
+  "started_at": "2026-10-13T18:20:44",
+  "finished_at": "2026-10-13T18:20:44",
+  "record_json": "data\\repairs\\sensor_cavitation_closed_loop.json"
 }

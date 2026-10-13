@@ -80,7 +80,7 @@
           "attempt": 2,
           "effectiveness": 1.0,
           "verify": "success",
-          "residual_sigma": 1.36
+          "residual_sigma": 1.4
         }
       ]
     }

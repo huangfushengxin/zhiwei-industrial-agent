@@ -1,9 +1,9 @@
 {
   "tool": "simulate_repair",
   "created_at": "2026-10-09T15:02:15",
-  "source_file": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\uploads\\M-001_20261009-150147.csv",
+  "source_file": "data\\uploads\\M-001_20261009-150147.csv",
   "source_name": "M-001_20261009-150147.csv",
-  "output_csv": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\repairs\\M-001_20261009-150147_repair_e1.00_a1.csv",
+  "output_csv": "data\\repairs\\M-001_20261009-150147_repair_e1.00_a1.csv",
   "fault": "overload",
   "fault_name": "负载过大 / 转动部件卡涩",
   "repair_target": "overload",

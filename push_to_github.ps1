@@ -5,7 +5,12 @@ param(
   [string]$Email = ""
 )
 $ErrorActionPreference = 'Stop'
-$git = "C:\Users\28385\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\git\cmd\git.exe"
+$git = (Get-Command git -ErrorAction SilentlyContinue).Source
+if (-not $git) {
+  $cand = Get-ChildItem "$env:USERPROFILE\.cache\codex-runtimes","$env:ProgramFiles\Git" -Recurse -Filter git.exe -ErrorAction SilentlyContinue |
+          Where-Object { $_.FullName -match 'cmd\\git\.exe$' } | Select-Object -First 1
+  if ($cand) { $git = $cand.FullName } else { throw "未找到 git，请先安装 Git for Windows" }
+}
 $proj = $PSScriptRoot
 Set-Location $proj
 

@@ -72,7 +72,7 @@
       "attempt": 1,
       "effectiveness": 1.0,
       "replan_reason": null,
-      "repair_csv": "C:\\Users\\28385\\Desktop\\AI-Industrial-Agent\\data\\repairs\\sensor_misalignment_repair_e1.00_a1.csv",
+      "repair_csv": "data\\repairs\\sensor_misalignment_repair_e1.00_a1.csv",
       "verify_status": "success",
       "verdict": "维修成功：设备已恢复到健康基线",
       "worst_residual_sigma": 1.79,
@@ -96,7 +96,7 @@
         "file": "sensor_misalignment.csv",
         "samples": 600
       },
-      "at": "2026-10-12T13:58:37"
+      "at": "2026-10-13T18:27:03"
     },
     {
       "step": "detect_anomalies",
@@ -110,7 +110,7 @@
         ],
         "max_abs_shift_z": 126.13
       },
-      "at": "2026-10-12T13:58:38"
+      "at": "2026-10-13T18:27:03"
     },
     {
       "step": "diagnose_fault",
@@ -119,7 +119,7 @@
         "verdict": "联轴器不对中 / 转子不平衡",
         "confidence": 0.999
       },
-      "at": "2026-10-12T13:58:38"
+      "at": "2026-10-13T18:27:03"
     },
     {
       "step": "plan_repair",
@@ -130,7 +130,7 @@
         "steps": 7,
         "estimated_hours": 4.0
       },
-      "at": "2026-10-12T13:58:38"
+      "at": "2026-10-13T18:27:03"
     },
     {
       "step": "simulate_repair",
@@ -138,9 +138,9 @@
       "detail": {
         "attempt": 1,
         "effectiveness": 1.0,
-        "output_csv": "C:\\Users\\28385\\Desktop\\AI-Industrial-Agent\\data\\repairs\\sensor_misalignment_repair_e1.00_a1.csv"
+        "output_csv": "data\\repairs\\sensor_misalignment_repair_e1.00_a1.csv"
       },
-      "at": "2026-10-12T13:58:38"
+      "at": "2026-10-13T18:27:03"
     },
     {
       "step": "verify_repair",
@@ -151,10 +151,10 @@
         "worst_residual_sigma": 1.79,
         "health_index": 100
       },
-      "at": "2026-10-12T13:58:38"
+      "at": "2026-10-13T18:27:03"
     }
   ],
   "next_step": "归档本次闭环记录（trace 可作为 Agent 执行时间线）",
-  "started_at": "2026-10-12T13:58:37",
-  "finished_at": "2026-10-12T13:58:38"
+  "started_at": "2026-10-13T18:27:03",
+  "finished_at": "2026-10-13T18:27:03"
 }

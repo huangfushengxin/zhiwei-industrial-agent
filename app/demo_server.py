@@ -39,8 +39,20 @@ from repair_plan import build_plan  # noqa: E402
 from simulate_repair import DEFAULT_OUT_DIR, simulate  # noqa: E402
 from verify_repair import verify  # noqa: E402
 
-AGH_HOME = Path(os.environ.get("ZHIWEI_AGH_HOME",
-                               r"C:\Users\<user>\Documents\ChatGPT\SoloAI-Lab\agnes-harness"))
+def _find_agh_home() -> Path:
+    """定位 Agnes Harness 源码目录：环境变量优先，否则在常见位置自动探测。"""
+    env = os.environ.get("ZHIWEI_AGH_HOME")
+    if env:
+        return Path(env)
+    candidates = [ROOT.parent / "agnes-harness", ROOT / "agnes-harness",
+                  Path.home() / "agnes-harness", Path.home() / "Documents" / "agnes-harness"]
+    for c in candidates:
+        if (c / "packages" / "cli" / "dist" / "local" / "agnes.mjs").exists():
+            return c
+    return candidates[0]
+
+
+AGH_HOME = _find_agh_home()
 AGH_ENTRY = AGH_HOME / "packages" / "cli" / "dist" / "local" / "agnes.mjs"
 AGH_PROFILE = os.environ.get("ZHIWEI_AGH_PROFILE", "local-dev")
 SEED = 20261010

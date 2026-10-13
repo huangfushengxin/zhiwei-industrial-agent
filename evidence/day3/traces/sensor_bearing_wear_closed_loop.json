@@ -72,19 +72,19 @@
       "attempt": 1,
       "effectiveness": 1.0,
       "replan_reason": null,
-      "repair_csv": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\repairs\\sensor_bearing_wear_repair_e1.00_a1.csv",
+      "repair_csv": "data\\repairs\\sensor_bearing_wear_repair_e1.00_a1.csv",
       "verify_status": "success",
       "verdict": "维修成功：设备已恢复到健康基线",
-      "worst_residual_sigma": 1.13,
+      "worst_residual_sigma": 1.8,
       "health_index": 100,
       "residual_fault": null,
       "residual_shifts_sigma": {
         "轴承温度": -1.13,
         "振动速度": -1.08,
-        "转速": -0.9,
+        "转速": -1.8,
         "电机电流": -0.44,
         "出口压力": -0.13,
-        "出口流量": 0.09
+        "出口流量": 0.15
       }
     }
   ],
@@ -96,7 +96,7 @@
         "file": "sensor_bearing_wear.csv",
         "samples": 600
       },
-      "at": "2026-10-09T10:26:15"
+      "at": "2026-10-13T18:20:43"
     },
     {
       "step": "detect_anomalies",
@@ -110,16 +110,16 @@
         ],
         "max_abs_shift_z": 86.47
       },
-      "at": "2026-10-09T10:26:15"
+      "at": "2026-10-13T18:20:43"
     },
     {
       "step": "diagnose_fault",
       "status": "diagnosed",
       "detail": {
         "verdict": "轴承磨损（滚动体 / 滚道损伤）",
-        "confidence": 0.993
+        "confidence": 0.986
       },
-      "at": "2026-10-09T10:26:15"
+      "at": "2026-10-13T18:20:43"
     },
     {
       "step": "plan_repair",
@@ -130,7 +130,7 @@
         "steps": 7,
         "estimated_hours": 6.0
       },
-      "at": "2026-10-09T10:26:16"
+      "at": "2026-10-13T18:20:43"
     },
     {
       "step": "simulate_repair",
@@ -138,9 +138,9 @@
       "detail": {
         "attempt": 1,
         "effectiveness": 1.0,
-        "output_csv": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\repairs\\sensor_bearing_wear_repair_e1.00_a1.csv"
+        "output_csv": "data\\repairs\\sensor_bearing_wear_repair_e1.00_a1.csv"
       },
-      "at": "2026-10-09T10:26:16"
+      "at": "2026-10-13T18:20:44"
     },
     {
       "step": "verify_repair",
@@ -148,13 +148,14 @@
       "detail": {
         "attempt": 1,
         "verdict": "维修成功：设备已恢复到健康基线",
-        "worst_residual_sigma": 1.13,
+        "worst_residual_sigma": 1.8,
         "health_index": 100
       },
-      "at": "2026-10-09T10:26:16"
+      "at": "2026-10-13T18:20:44"
     }
   ],
   "next_step": "归档本次闭环记录（trace 可作为 Agent 执行时间线）",
-  "started_at": "2026-10-09T10:26:15",
-  "finished_at": "2026-10-09T10:26:16"
+  "started_at": "2026-10-13T18:20:43",
+  "finished_at": "2026-10-13T18:20:44",
+  "record_json": "data\\repairs\\sensor_bearing_wear_closed_loop.json"
 }

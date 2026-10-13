@@ -1,9 +1,9 @@
 {
   "tool": "simulate_repair",
   "created_at": "2026-10-09T14:08:15",
-  "source_file": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\sensor_cavitation.csv",
+  "source_file": "data\\sensor_cavitation.csv",
   "source_name": "sensor_cavitation.csv",
-  "output_csv": "C:\\Users\\<user>\\Documents\\ChatGPT\\SoloAI-Lab\\zhiwei\\data\\repairs\\sensor_cavitation_repair_e0.50_a1.csv",
+  "output_csv": "data\\repairs\\sensor_cavitation_repair_e0.50_a1.csv",
   "fault": "cavitation",
   "fault_name": "泵气蚀 / 入口堵塞",
   "repair_target": "cavitation",
