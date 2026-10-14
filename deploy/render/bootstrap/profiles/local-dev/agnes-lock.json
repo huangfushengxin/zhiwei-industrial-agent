@@ -1,0 +1,145 @@
+{
+  "lockfileVersion": 1,
+  "profile": "local-dev",
+  "resolvedProfileHash": "sha256-891cda2b59aefc92680f75220efc8c709ab5db70823b4be86246034381986b91",
+  "generatedAt": "2026-10-14T12:05:51.834Z",
+  "generatedBy": {
+    "agnesVersion": "0.0.0"
+  },
+  "packages": {
+    "@agnes/skill-helper": {
+      "version": "0.1.1",
+      "integrity": "sha256-ea0aff694b93422853019e1e47db4c88fbaa3f71ac3d0f7b5ba0f202436c63d2",
+      "trust": "trusted",
+      "license": "MIT",
+      "state": {
+        "installed": "2026-10-08T07:29:06.147Z",
+        "trusted": "2026-10-08T07:29:06.434Z",
+        "enabled": true
+      },
+      "dependencies": {},
+      "previous": null,
+      "source": {
+        "type": "file",
+        "ref": "file:./bundled-plugins/skill-helper"
+      },
+      "contributions": [],
+      "treeIntegrity": "sha256-ea0aff694b93422853019e1e47db4c88fbaa3f71ac3d0f7b5ba0f202436c63d2",
+      "surfaces": [],
+      "trustDecision": {
+        "integrity": "sha256-ea0aff694b93422853019e1e47db4c88fbaa3f71ac3d0f7b5ba0f202436c63d2",
+        "capabilityHash": "e3de4e5f2da4b8aa2650af5c4f822d397c2dadd7a6695e5071c0444d26a22b01",
+        "decidedAt": "2026-10-08T07:29:06.434Z"
+      }
+    },
+    "@agnes/mcp-helper": {
+      "version": "0.1.0",
+      "integrity": "sha256-8290a005c7268dc325f594dabad0d444aa71ba21b2eaade49aa74ef781344e03",
+      "trust": "trusted",
+      "license": "Apache-2.0",
+      "state": {
+        "installed": "2026-10-08T07:29:07.271Z",
+        "trusted": "2026-10-08T07:29:07.520Z",
+        "enabled": true
+      },
+      "dependencies": {},
+      "previous": null,
+      "source": {
+        "type": "file",
+        "ref": "file:./bundled-plugins/mcp-helper"
+      },
+      "contributions": [],
+      "treeIntegrity": "sha256-8290a005c7268dc325f594dabad0d444aa71ba21b2eaade49aa74ef781344e03",
+      "surfaces": [],
+      "trustDecision": {
+        "integrity": "sha256-8290a005c7268dc325f594dabad0d444aa71ba21b2eaade49aa74ef781344e03",
+        "capabilityHash": "e3de4e5f2da4b8aa2650af5c4f822d397c2dadd7a6695e5071c0444d26a22b01",
+        "decidedAt": "2026-10-08T07:29:07.520Z"
+      }
+    },
+    "@agnes/plugin-helper": {
+      "version": "0.1.1",
+      "integrity": "sha256-9631bb780e18ca0cf674fb78f5d3951964c072eac099f7ab51e2fc002b2244f3",
+      "trust": "trusted",
+      "license": "Apache-2.0",
+      "state": {
+        "installed": "2026-10-08T07:29:08.313Z",
+        "trusted": "2026-10-08T07:29:08.629Z",
+        "enabled": true
+      },
+      "dependencies": {},
+      "previous": null,
+      "source": {
+        "type": "file",
+        "ref": "file:./bundled-plugins/plugin-helper"
+      },
+      "contributions": [],
+      "treeIntegrity": "sha256-9631bb780e18ca0cf674fb78f5d3951964c072eac099f7ab51e2fc002b2244f3",
+      "surfaces": [],
+      "trustDecision": {
+        "integrity": "sha256-9631bb780e18ca0cf674fb78f5d3951964c072eac099f7ab51e2fc002b2244f3",
+        "capabilityHash": "e3de4e5f2da4b8aa2650af5c4f822d397c2dadd7a6695e5071c0444d26a22b01",
+        "decidedAt": "2026-10-08T07:29:08.629Z"
+      }
+    },
+    "@agnes/document-reader": {
+      "version": "0.1.2",
+      "integrity": "sha256-3ad9d706ad9f6a7d1c93acfe35b1ebc47516dd1a801e21e12c147eee6fa4e19f",
+      "trust": "trusted",
+      "license": "Apache-2.0",
+      "state": {
+        "installed": "2026-10-08T07:29:10.902Z",
+        "trusted": "2026-10-08T07:29:11.652Z",
+        "enabled": true
+      },
+      "dependencies": {},
+      "previous": null,
+      "source": {
+        "type": "file",
+        "ref": "file:./bundled-plugins/document-reader"
+      },
+      "contributions": [],
+      "treeIntegrity": "sha256-3ad9d706ad9f6a7d1c93acfe35b1ebc47516dd1a801e21e12c147eee6fa4e19f",
+      "surfaces": [],
+      "trustDecision": {
+        "integrity": "sha256-3ad9d706ad9f6a7d1c93acfe35b1ebc47516dd1a801e21e12c147eee6fa4e19f",
+        "capabilityHash": "e3de4e5f2da4b8aa2650af5c4f822d397c2dadd7a6695e5071c0444d26a22b01",
+        "decidedAt": "2026-10-08T07:29:11.652Z"
+      }
+    }
+  },
+  "seams": {
+    "approval": "@agnes/base",
+    "checkpoint": "@agnes/base",
+    "ledger": "@agnes/base",
+    "sandbox": "@agnes/base",
+    "verifier": "@agnes/base",
+    "repair": "@agnes/base",
+    "artifacts": "@agnes/base",
+    "principals": "@agnes/base",
+    "platform": "@agnes/host",
+    "harness": "@agnes/base"
+  },
+  "provider": {
+    "package": "@agnes/ai",
+    "adapters": [
+      "@agnes/ai"
+    ]
+  },
+  "policySnapshot": {
+    "capabilityCeiling": [
+      "tools",
+      "hooks",
+      "slots",
+      "events",
+      "resources",
+      "ui",
+      "network",
+      "network.publicRead",
+      "tools.invoke",
+      "artifacts",
+      "subagent"
+    ],
+    "workspacePackages": "require-project-trust"
+  }
+}

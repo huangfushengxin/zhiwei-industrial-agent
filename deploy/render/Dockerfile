@@ -35,7 +35,10 @@ RUN python3 -m pip install --break-system-packages --no-cache-dir \
 
 # ---------- 3) AGH Skill ----------
 COPY deploy/render/bootstrap /opt/bootstrap
-RUN mkdir -p /root/.agh/skills && cp -r /opt/bootstrap/skills/. /root/.agh/skills/ && ls -R /root/.agh/skills
+RUN mkdir -p /root/.agh/skills /root/.agh/profiles \
+ && cp -r /opt/bootstrap/skills/. /root/.agh/skills/ \
+ && cp -r /opt/bootstrap/profiles/. /root/.agh/profiles/ \
+ && ls -R /root/.agh
 
 # ---------- 4) 构建期注册 MCP 工具（trusted + enabled） ----------
 COPY deploy/render/build_setup.sh /opt/build_setup.sh
