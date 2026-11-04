@@ -49,4 +49,4 @@ nohup bash -c '
 # 3) 前台：演示服务
 log "启动演示服务 :$PORT"
 cd /opt/zhiwei/app
-exec python3 demo_server.py --port "$PORT" --host 0.0.0.0
+exec python3 demo_server.py --port "$PORT" --host 0.0.0.0 --mode agent

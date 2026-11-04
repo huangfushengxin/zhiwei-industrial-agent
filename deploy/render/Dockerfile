@@ -15,7 +15,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN corepack enable && corepack prepare pnpm@10.34.5 --activate
 
 # ---------- 1) 构建 Agnes Harness（官方源码） ----------
-RUN git clone --depth 1 https://github.com/AgnesAI-Labs/agnes-harness /opt/agnes-harness
+ARG AGH_REF=cde816b88c737b9fd04e7ef55b899e7b4cd55eb7
+RUN git init /opt/agnes-harness \
+ && git -C /opt/agnes-harness remote add origin https://github.com/AgnesAI-Labs/agnes-harness \
+ && git -C /opt/agnes-harness fetch --depth 1 origin "$AGH_REF" \
+ && git -C /opt/agnes-harness checkout --detach FETCH_HEAD
 WORKDIR /opt/agnes-harness
 RUN pnpm config set registry https://registry.npmmirror.com \
  && pnpm install --frozen-lockfile \

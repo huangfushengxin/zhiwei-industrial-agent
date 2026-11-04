@@ -1,0 +1,5 @@
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [".", "tools"]
+addopts = "-ra"
+markers = ["integration: starts a local HTTP or MCP process; no model credentials required"]

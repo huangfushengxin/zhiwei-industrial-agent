@@ -9,6 +9,7 @@ venv/
 data/uploads/
 *.bak
 _*.py
+!**/__init__.py
 _*.ps1
 
 # 系统文件
@@ -19,5 +20,13 @@ desktop.ini
 # 编辑器
 .vscode/
 .idea/
+.env
+.env.*
+!.env.example
+.pytest_cache/
+pytest-cache-files-*/
+.coverage
+artifacts/
+.agh/
 # 含手写签名的提交件（仅入提交包，不公开到仓库）
 docs/声明文件-已签署/
