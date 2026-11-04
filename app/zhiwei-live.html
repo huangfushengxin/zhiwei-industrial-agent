@@ -122,7 +122,7 @@
   <section class="panel">
     <h3>任务输入</h3>
     <textarea id="taskText" spellcheck="false" style="height:74px">检查这台电机是否存在异常。如果存在，请诊断故障、制定维修方案，并验证维修结果。</textarea>
-    <div class="hint" style="margin-top:6px">可直接编辑任务内容；点击「开始智能诊断」后，该任务将由 Agnes Agent 在 AGH 中自主执行。</div>
+    <div class="hint" id="modeHint" style="margin-top:6px">正在检测运行模式…</div>
   </section>
 
   <div class="grid2">
@@ -151,7 +151,7 @@
   <section class="panel">
     <h3>Agent 执行时间线 <span class="hint" id="phaseText"></span></h3>
     <div class="stepper" id="stepper"></div>
-    <div class="hint" style="margin:10px 0 6px">外部能力调用（通过 MCP 调用的工具链）</div>
+    <div class="hint" id="executionHint" style="margin:10px 0 6px">工具执行记录</div>
     <div class="log" id="log">等待开始…</div>
     <details id="answerBox" hidden><summary>查看 Agent 完整结论</summary><pre class="answer" id="answer"></pre></details>
   </section>
@@ -165,7 +165,7 @@
     </div>
   </section>
 </main>
-<footer>执行底座 Agnes Harness (AGH) · 模型 Agnes 3.0 Flash · 工具经 MCP 调用 · 数据仅在本机处理<br><span style="opacity:.6">构建 v6 · 2026-10-11 · 新增任务输入 + 外部能力调用标注</span></footer>
+<footer>工业运维仿真演示 · 不连接真实设备 · 不作为现场维修依据<br>离线模式在本地计算；Agent 模式会将任务与工具结果发送给配置的模型服务。</footer>
 
 <script>
 const STEP_IDS = ["plan","read","detect","diagnose","repair","verify"];
@@ -177,8 +177,17 @@ let es = null, busy = false, devices = [];
 (async function init(){
   try{
     const h = await (await fetch("/api/health")).json();
-    el("aghStatus").textContent = h.aghFound ? "已就绪" : "未找到";
-    el("aghDot").className = "dot " + (h.aghFound ? "ok" : "bad");
+    const offline = h.mode === "offline";
+    el("aghStatus").textContent = offline ? "无需安装" : (h.aghFound ? "入口已找到" : "未找到");
+    el("aghDot").className = "dot " + (offline || h.aghFound ? "ok" : "bad");
+    el("agnesStatus").textContent = offline ? "未调用" : "待调用验证";
+    el("agnesDot").className = "dot wait";
+    el("toolCount").textContent = offline ? "未连接" : "待调用验证";
+    el("modeHint").textContent = offline
+      ? "离线工具演示：按固定流程分析 CSV，不调用大模型。任务输入仅在 Agent 模式生效。"
+      : "Agent 模式：先展示工具计算，再由已配置的 Agnes Agent 执行；任务和工具结果会发送至模型服务。";
+    el("taskText").disabled = offline;
+    el("executionHint").textContent = offline ? "本地 Python 工具链执行记录" : "AGH Agent 与 MCP 工具调用记录";
   }catch(e){ el("aghStatus").textContent = "不可用"; el("aghDot").className = "dot bad"; }
   try{
     const d = await (await fetch("/api/devices")).json();
@@ -188,8 +197,6 @@ let es = null, busy = false, devices = [];
       devices.map(x => '<option value="'+x.sample+'">维修前：'+x.id+'</option>').join("");
     syncBaseline();
     await loadDevice();
-    el("agnesStatus").textContent = "在线"; el("agnesDot").className = "dot ok";
-    el("toolCount").textContent = "9";
   }catch(e){ el("dataInfo").textContent = "设备列表加载失败"; }
 })();
 
@@ -368,7 +375,7 @@ el("start").onclick = async () => {
       case "answer": el("answer").textContent = d.text; el("answerBox").hidden = false; break;
       case "error": log("错误：" + d.text); break;
       case "done":
-        STEP_IDS.forEach(i => { const n = el("step-"+i); if(n && n.className.includes("running")) setStep(i, "done"); });
+        markAll(d.ok ? "done" : "failed");
         el("phaseText").textContent = d.ok ? "· 执行完成" : "· 执行结束（有错误）";
         es.close(); es = null; busy = false; el("start").disabled = false; break;
     }

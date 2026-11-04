@@ -150,7 +150,7 @@ def _trend(timestamps: list[str], series: dict, limit: int = 120) -> dict:
 
 
 def run_job(job_id: str, csv_path: Path, baseline_path: Path | None = None,
-            task: str | None = None) -> None:
+            task: str | None = None, mode: str = "offline") -> None:
     job = _jobs[job_id]
     lock = job["lock"]
 
@@ -158,8 +158,11 @@ def run_job(job_id: str, csv_path: Path, baseline_path: Path | None = None,
         with lock:
             job["events"].append({"type": kind, "at": time.time(), **payload})
 
-    emit("status", text="Agent 已接收任务，正在规划执行步骤…")
-    emit("plan_steps", steps=PLANNED_STEPS)
+    emit("status", text="工具链已接收任务…" if mode == "offline" else "Agent 已接收任务，正在规划执行步骤…")
+    steps = [dict(step) for step in PLANNED_STEPS]
+    if mode == "offline":
+        steps[0]["tool"] = "Python 工具链"
+    emit("plan_steps", steps=steps)
     time.sleep(0.5)
     emit("phase", text="工具链实时计算", phase=1)
 
@@ -240,6 +243,14 @@ def run_job(job_id: str, csv_path: Path, baseline_path: Path | None = None,
                  next_step=ver["next_step"])
     except Exception as exc:  # noqa: BLE001
         emit("error", text=f"工具链计算出错：{exc}")
+        emit("done", ok=False, mode=mode)
+        return
+
+    if mode == "offline":
+        conclusion = diag["verdict"] if diag["status"] == "normal" else ver["verdict"]
+        emit("answer", text=f"离线工具演示完成：{conclusion}。本次未调用大模型；数据与维修均为仿真。")
+        emit("done", ok=True, mode="offline")
+        return
 
     # ---------- 阶段二：真实 AGH Agent ----------
     emit("phase", text="Agnes Agent 在 AGH 中执行", phase=2)
@@ -296,6 +307,14 @@ def run_job(job_id: str, csv_path: Path, baseline_path: Path | None = None,
     emit("done", ok=proc.returncode == 0)
 
 
+class DemoServer(ThreadingHTTPServer):
+    def __init__(self, address, mode: str = "offline"):
+        if mode not in ("offline", "agent"):
+            raise ValueError("Unknown demo mode")
+        self.mode = mode
+        super().__init__(address, Handler)
+
+
 class Handler(BaseHTTPRequestHandler):
     server_version = "ZhiWeiDemo/2.0"
 
@@ -320,7 +339,8 @@ class Handler(BaseHTTPRequestHandler):
 
         if path == "/api/health":
             self._json(200, {"ok": True, "aghEntry": str(AGH_ENTRY), "aghFound": AGH_ENTRY.exists(),
-                             "profile": AGH_PROFILE, "root": str(ROOT), "task": TASK_TEXT})
+                             "mode": self.server.mode, "profile": AGH_PROFILE,
+                             "root": str(ROOT), "task": TASK_TEXT})
             return
 
         if path == "/api/devices":
@@ -332,8 +352,7 @@ class Handler(BaseHTTPRequestHandler):
             raw = (qs.get("name") or ["sensor_overload.csv"])[0]
             data_root = (ROOT / "data").resolve()
             target = (data_root / raw).resolve()
-            if (not target.exists() or target.is_dir()
-                    or not str(target).startswith(str(data_root))):
+            if not target.is_file() or not target.is_relative_to(data_root):
                 self._json(404, {"error": "示例数据不存在"})
                 return
             self._send(200, target.read_bytes(), "text/csv; charset=utf-8")
@@ -355,13 +374,14 @@ class Handler(BaseHTTPRequestHandler):
             _jobs[job_id] = {"events": [], "lock": threading.Lock()}
             threading.Thread(target=run_job,
                              args=(job_id, csv_path, baseline_path, task),
+                             kwargs={"mode": self.server.mode},
                              daemon=True).start()
             self._serve_events(job_id)
             return
 
         rel = "zhiwei-live.html" if path in ("/", "") else path.lstrip("/")
         target = (HERE / rel).resolve()
-        if not str(target).startswith(str(HERE)) or not target.exists():
+        if not target.is_relative_to(HERE) or not target.is_file():
             self._send(404, b"not found", "text/plain; charset=utf-8")
             return
         ctype = {".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8",
@@ -397,11 +417,22 @@ class Handler(BaseHTTPRequestHandler):
         if urlparse(self.path).path != "/api/upload":
             self._json(404, {"error": "unknown endpoint"})
             return
-        raw = self.rfile.read(int(self.headers.get("Content-Length") or 0)).decode("utf-8", "replace")
+        try:
+            length = int(self.headers.get("Content-Length") or 0)
+        except ValueError:
+            self._json(400, {"error": "无效请求长度"})
+            return
+        if not 0 <= length <= 2 * 1024 * 1024:
+            self._json(413, {"error": "CSV 请求最大 2 MiB"})
+            return
+        raw = self.rfile.read(length).decode("utf-8", "replace")
         try:
             payload = json.loads(raw)
         except json.JSONDecodeError:
             self._json(400, {"error": "请求体必须是 JSON"})
+            return
+        if not isinstance(payload, dict):
+            self._json(400, {"error": "请求体必须是 JSON 对象"})
             return
         name = Path(str(payload.get("name") or "motor_data.csv")).name
         csv_text = str(payload.get("csv") or "")
@@ -411,7 +442,7 @@ class Handler(BaseHTTPRequestHandler):
         if not name.lower().endswith(".csv"):
             name += ".csv"
         UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-        safe = f"{Path(name).stem}_{time.strftime('%Y%m%d-%H%M%S')}.csv"
+        safe = f"{Path(name).stem}_{uuid.uuid4().hex[:12]}.csv"
         (UPLOAD_DIR / safe).write_text(csv_text, encoding="utf-8")
         self._json(200, {"file": safe, "rows": max(0, len(csv_text.strip().splitlines()) - 1)})
 
@@ -420,11 +451,14 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="智维交互式演示服务")
     parser.add_argument("--port", type=int, default=8801)
     parser.add_argument("--host", default="127.0.0.1")
+    parser.add_argument("--mode", choices=("offline", "agent"), default="offline")
     args = parser.parse_args()
-    if not AGH_ENTRY.exists():
-        print(f"[warn] 未找到 AGH 入口：{AGH_ENTRY}", file=sys.stderr)
+    if args.mode == "agent" and not AGH_ENTRY.exists():
+        print(f"[error] 未找到 AGH 入口：{AGH_ENTRY}。请按 docs/RUNNING.md 配置，或使用 --mode offline。", file=sys.stderr)
+        return 1
+    print(f"运行模式：{args.mode}（{'不调用模型' if args.mode == 'offline' else '需要已配置的 AGH/MCP/模型'}）")
     print(f"智维演示服务已启动： http://{args.host}:{args.port}/")
-    ThreadingHTTPServer((args.host, args.port), Handler).serve_forever()
+    DemoServer((args.host, args.port), args.mode).serve_forever()
     return 0
 
 

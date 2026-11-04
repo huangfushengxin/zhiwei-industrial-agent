@@ -1,0 +1,57 @@
+name: CI
+on:
+  push:
+    branches: [main, 'codex/**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    name: Python ${{ matrix.python }} / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ['3.11', '3.13']
+    env:
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+      - run: python -m pip install -r requirements-dev.txt
+      - run: python -m pytest --junitxml=artifacts/pytest.xml
+      - run: python scripts/validate.py
+      - name: Record resolved dependencies
+        run: python -m pip freeze > artifacts/dependencies.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reports-${{ matrix.os }}-${{ matrix.python }}
+          path: artifacts/
+
+  docker:
+    name: Offline Docker smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - run: docker build -t zhiwei-offline .
+      - run: docker run -d --name zhiwei -p 8801:8801 zhiwei-offline
+      - name: Check HTTP health and offline mode
+        run: |
+          curl --fail --retry 15 --retry-all-errors --retry-delay 1 --retry-max-time 30 --connect-timeout 2 --max-time 5 http://127.0.0.1:8801/api/health -o health.json
+          python -c "import json; h=json.load(open('health.json')); assert h['ok'] and h['mode']=='offline'"
+      - if: always()
+        run: docker logs zhiwei

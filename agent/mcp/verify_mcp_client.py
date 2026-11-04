@@ -44,9 +44,11 @@ async def main() -> int:
                 ("run_closed_loop", {"csv_path": "sensor_cavitation.csv", "repair_effectiveness": 0.5}),
             ]
             print()
+            failed = 0
             for name, args in calls:
                 result = await session.call_tool(name, args)
                 if result.is_error:
+                    failed += 1
                     print(f"[call] {name:<20} FAILED")
                     continue
                 payload = json.loads(result.content[0].text)
@@ -59,7 +61,10 @@ async def main() -> int:
                 elif name == "simulate_repair":
                     extra = f" -> {Path(payload['output_csv']).name}"
                 print(f"[call] {name:<20} ok  status={summary}{extra}")
-    print("\nMCP 协议自检通过（9 个工具全部可调用）")
+    if failed:
+        print(f"\nMCP 协议自检失败（{failed}/{len(calls)} 个工具调用失败）")
+        return 1
+    print(f"\nMCP 协议自检通过（{len(calls)} 个工具全部可调用；无需模型密钥）")
     return 0
 
 

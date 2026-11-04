@@ -47,6 +47,8 @@ DEFAULT_SEED = 20261009
 def run(csv_path: Path, repair_effectiveness: float = 1.0,
         max_attempts: int = DEFAULT_MAX_ATTEMPTS, seed: int = DEFAULT_SEED,
         out_dir: Path | None = None) -> dict:
+    if max_attempts < 1 or not 0 <= repair_effectiveness <= 1:
+        raise ValueError("max_attempts must be >= 1 and effectiveness must be in [0, 1]")
     out_dir = out_dir or DEFAULT_OUT_DIR
     trace: list[dict] = []
     started = datetime.now()
