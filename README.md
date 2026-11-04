@@ -1,234 +1,117 @@
-# 智维 ZHIWEI · AI 工业设备智能运维 Agent
+# 智维 ZHIWEI · 工业设备运维 Agent
 
-> **让工业设备自己发现故障、制定维修方案、模拟维修，并用数据证明自己修对了。**
+[![CI](https://github.com/huangfushengxin/zhiwei-industrial-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/huangfushengxin/zhiwei-industrial-agent/actions/workflows/ci.yml)
 
-| 赛事信息 | |
-|---|---|
-| 赛事 | 2026 年江苏省 AI+科学与工程创新实践黑客松（高校组） |
-| 参赛编号 | **U225** |
-| 组别 | **本科生组** |
-| 队伍名称 | **SoloAI Lab**（单人队伍） |
-| 队长 | **皇甫生昕**（本科生） |
-| 参考方向 | 机械工程与数字孪生 · Agent 与 Harness 工程 · 智能制造与系统 |
-| 运行底座 | **Agnes Harness (AGH)** |
-| 模型 | **Agnes 3.0 Flash（agnes-3.0-flash）** —— 全部模型调用仅使用 Agnes 模型 |
+面向旋转设备的运维仿真应用：读取传感器数据，检测异常、诊断故障、制定维修方案、模拟维修，并用维修前的健康基线验证结果。未通过验证时重新规划，达到次数上限则报告未解决。
 
----
+[在线案例展示](https://huangfushengxin.github.io/zhiwei-industrial-agent/) · [演示视频](https://www.bilibili.com/video/BV1MEpn6cExt/) · [完整运行指南](docs/RUNNING.md) · [开发与 PR 约定](CONTRIBUTING.md)
 
-## 一、我们解决什么问题
+在线展示页是预计算案例，不会在浏览器中调用模型。完整 Agent 使用官方 **Agnes Harness (AGH)** 作为底座，通过本项目编写的 MCP 服务调用工业工具；AGH 不是本人开发的框架。
 
-工业现场的旋转设备（泵、风机、电机）运维，长期依赖老师傅经验：**发现异常靠巡检，判断故障靠经验，修完还要再观察一段时间**。常见痛点是：
+## 先在自己的电脑运行
 
-- 早期劣化发现晚，等到报警时已接近失效；
-- 故障判断依赖个人经验，同一现象不同人给出不同结论；
-- **修完没有客观验收** —— 修得好不好，只能"感觉"。
+只需 Python 3.11+，无需 Key、Node.js 或第三方 Python 依赖：
 
-**智维要做的，是让 AI 不只"说出哪里坏了"，而是真的调用工具去分析、去修、并用数据证明修好了。**
-
----
-
-## 二、系统架构
-
-```
-                      ┌──────────────────────────────┐
-   用户/评委  ───────▶ │  展示层  app/zhiwei-live.html │  交互式诊断演示页面
-                      │         app/demo_server.py    │  本地演示服务（SSE 实时推送）
-                      └───────────────┬──────────────┘
-                                      │ 自然语言任务
-                                      ▼
-                      ┌──────────────────────────────┐
-                      │  Agnes Harness (AGH)  运行底座 │  ← 赛事指定底座
-                      │  任务规划 · 工具调用 · 审批 · 记录 │
-                      └───────────────┬──────────────┘
-                                      │ MCP 协议（stdio）
-                                      ▼
-                      ┌──────────────────────────────┐
-                      │  智维 MCP 工具服务（9 个工具）    │  agent/mcp/
-                      └───────────────┬──────────────┘
-                                      │
-                                      ▼
-      ┌───────────────────────────────────────────────────────────┐
-      │  工业工具链  tools/                                        │
-      │  异常检测 → 故障诊断 → 维修方案 → 模拟维修 → 维修后验证      │
-      │  知识库（4 类故障 × 特征指纹 × 维修工序 × 验收标准）           │
-      └───────────────────────────────────────────────────────────┘
-                                      │
-                                      ▼
-                            传感器时序数据 data/*.csv
+```sh
+git clone https://github.com/huangfushengxin/zhiwei-industrial-agent.git
+cd zhiwei-industrial-agent
+python app/demo_server.py --mode offline
 ```
 
-**技术要点**
+浏览器打开 <http://127.0.0.1:8801/>，选择设备或上传项目提供的 CSV，点击开始。macOS/Linux 如无 `python`，使用 `python3`。
 
-- **AGH 是唯一运行底座**：所有任务的规划、工具调用、执行记录都由 AGH 完成；
-- **模型仅限 Agnes**：仅配置 `agnes-ai / agnes-3.0-flash` 一个供应商账号，仓库内不含任何其他厂商模型调用；
-- **工具经 MCP 接入**：9 个工具通过 Model Context Protocol（stdio）暴露给 Agent，AGH 侧状态 `connection=ready · tools=9`；
-- **只读工具与写盘工具分级**：检测/诊断/方案/验证类工具声明 `readOnlyHint=true` 免审批；写盘类工具（生成维修后数据）走 AGH 审批闸门。
+离线模式按固定工具流程计算，不调用大模型；页面明确标注模式。真实自然语言 Agent 请按 [AGH/MCP 配置与启动步骤](docs/RUNNING.md#4-完整-agh--mcp-agent)运行 `--mode agent`。
 
----
+也可在命令行观察失败后重规划：
 
-## 三、完整闭环（六步）
-
-```
-① 数据读取  read_sensor_summary
-② 异常检测  detect_anomalies      滚动中位数 + 鲁棒 z 分数（中位数/MAD）
-③ 故障诊断  diagnose_fault        特征指纹余弦匹配 + 维修建议
-④ 维修方案  plan_repair            停机策略/工时/安全措施/分步工序/备件/验收标准
-⑤ 模拟维修  simulate_repair        按修复彻底度生成维修后复测数据
-⑥ 维修后验证 verify_repair         以【维修前基线】对比，判定 success/partial/failed
-        └── 未通过 → 重新规划 → 再次维修 → 再次验证（最多 3 次）
+```sh
+python tools/closed_loop.py data/sensor_overload.csv --repair-effectiveness 0.5 --out-dir artifacts/repairs --summary
 ```
 
-**两个关键工程决策**
+## 项目能力与代码证据
 
-1. **跨基线验证**：维修后数据若"从第一秒就带着残留故障"，用它自己的前段做基线会把残留当成正常而漏判。因此验证一律以**维修前的健康基线**为参照。
-2. **可信的失败**：验证不通过时系统**不会假装修好**，而是给出残留测点、残留幅度（σ）和残留故障候选，触发重新规划。
+| 能力 | 本项目的实现 | 直接查看 |
+| --- | --- | --- |
+| Agent 应用与工具执行 | AGH 承担模型规划与执行；应用提供任务、SOP、工业工具与 SSE 展示 | [演示服务](app/demo_server.py)、[SOP](agent/skills/zhiwei-closed-loop/SKILL.md) |
+| MCP / tool use | stdio 服务暴露 9 个工具；只读/写盘分级；真协议自检 | [MCP 服务](agent/mcp/zhiwei_mcp_server.py)、[自检](agent/mcp/verify_mcp_client.py) |
+| 失败恢复 | 维修验证失败后重规划，限制重试次数；保留失败 trace | [闭环](tools/closed_loop.py)、[回归测试](tests/test_pipeline.py) |
+| LLM API | 可选诊断报告客户端，Bearer 鉴权、超时、有限重试、错误脱敏 | [HTTP 客户端](agent/llm/client.py) |
+| Structured output | 模型输出经 Pydantic 严格 Schema 校验，核心字段与工具事实比对；失败纠正一次 | [输出契约](agent/llm/schema.py)、[报告生成](agent/llm/report.py) |
+| Context window | 给输出留预算，保留系统规则与当前事实，按完整轮次淘汰最旧历史；必需内容超限则拒绝请求 | [上下文预算](agent/llm/context.py)、[测试](tests/test_context.py) |
+| pytest / 自动化 | 工具回归、HTTP/SSE、MCP stdio、模型错误响应与上下文边界 | [测试目录](tests/)、[GitHub Actions](.github/workflows/ci.yml) |
+| Docker / 部署 | 无密钥工具演示镜像；另有固定 AGH 提交的 Render 模型部署方案 | [Dockerfile](Dockerfile)、[Render](deploy/render/) |
+| Git 协作与 AI 开发 | 分支/PR、检查记录、真实 AI 辅助开发过程；不伪造独立 review | [贡献指南](CONTRIBUTING.md)、[开发记录](docs/AI_DEVELOPMENT.md) |
 
----
+可选 LLM 报告模块展示应用层 API/输出/上下文处理，是独立诊断报告路径，不声称替代 AGH 的自主 Agent 或实现了新的 Agent 框架。它采用客户端校验，没有假定供应商支持服务端 strict JSON Schema。
 
-## 四、快速开始（复现步骤）
+## 安装依赖与验证
 
-### 4.1 环境要求
+离线网页本身无需安装依赖。测试、MCP 和可选 LLM 模块使用：
 
-| 组件 | 版本 | 说明 |
-|---|---|---|
-| Node.js | ≥ 24.10 | 运行 AGH |
-| pnpm | 10.34.5 | AGH 锁定版本（用 corepack 激活） |
-| Python | 3.11+ | 运行工具链与演示服务（**仅标准库 + mcp SDK**） |
-| Agnes API Key | — | 需自行申请；配置进 AGH，**不要写进代码仓库** |
-
-### 4.2 搭建 AGH（约 15 分钟）
-
-```bash
-git clone https://github.com/AgnesAI-Labs/agnes-harness.git
-cd agnes-harness
-corepack prepare pnpm@10.34.5 --activate
-corepack pnpm install --frozen-lockfile
-corepack pnpm --filter @agnes/cli build:local
-node packages/cli/dist/local/agnes.mjs serve --port 4180 --profile local-dev
+```sh
+python -m venv .venv
+# Windows PowerShell: .\.venv\Scripts\Activate.ps1
+# macOS/Linux: . .venv/bin/activate
+python -m pip install -r requirements-dev.txt
+python -m pytest
+python scripts/validate.py
 ```
 
-> Windows 需要 Visual Studio C++ 生成工具（编译原生模块），详见 AGH 官方安装文档。
+验收报告与生成页位于 `artifacts/validation/`，历史验收在临时副本运行。pytest 的模型 HTTP 响应来自测试替身，不使用真实 Key。MCP 集成测试会启动真实 stdio 服务并调用全部 9 个工具。
 
-### 4.3 配置 Agnes 模型
+CI 配置覆盖 Ubuntu/Windows × Python 3.11/3.13，以及无密钥 Docker 构建和启动。以页面顶部 badge 和 [Actions 运行记录](https://github.com/huangfushengxin/zhiwei-industrial-agent/actions)的实际状态为准，配置存在不等于全部环境已验证。
 
-```bash
-node packages/cli/dist/local/agnes.mjs config
-# Provider 选 Agnes AI（Base URL: https://api.agnes-ai.cn/v1）
-# 粘贴你的 Agnes API Key，选择 agnes-3.0-flash
+历史固定仿真用例：故障诊断 5/5、闭环 6/6、异常恢复 4/4、三案例 3/3。这些是小样本工具验收，不代表真实工业准确率，也不是 LLM eval 分数。
+
+## 可选：直接调用模型生成结构化报告
+
+安装依赖并将自己的 `AGNES_API_KEY` 放入终端环境后：
+
+```sh
+python -m agent.llm.report --schema
+python -m agent.llm.report data/sensor_bearing_wear.csv --output artifacts/llm-report.json
 ```
 
-### 4.4 接入智维工具（MCP）
+默认模型为 `agnes-3.0-flash`；配置变量见 [.env.example](.env.example)，程序不自动加载该文件。Key 不提交 GitHub。真实调用与自动测试的区别、token 估算限制见 [运行指南](docs/RUNNING.md#5-可选直接调用模型生成结构化诊断报告)。
 
-```bash
-node packages/cli/dist/local/agnes.mjs mcp add zhiwei-ops --name "智维工业运维工具" \
-  --stdio <python.exe> --arg <项目路径>\agent\mcp\zhiwei_mcp_server.py \
-  --allow-tool list_scenarios --allow-tool read_sensor_summary --allow-tool detect_anomalies \
-  --allow-tool diagnose_fault --allow-tool analyze_equipment --allow-tool plan_repair \
-  --allow-tool simulate_repair --allow-tool verify_repair --allow-tool run_closed_loop
-# 然后 trust → enable（详见 AGH MCP 文档）
+## 架构与个人贡献
+
+```text
+演示网页 / 自然语言任务
+          │
+          ├─ offline → Python 工具链（无模型）
+          │
+          └─ agent → Agnes Harness + Agnes 模型（第三方）
+                         │ MCP stdio
+                         ▼
+                 智维 MCP 服务（9 工具）
+                         │
+          读取 → 检测 → 诊断 → 方案 → 模拟维修 → 验证
+                                      ▲            │
+                                      └─ 未通过重规划 ┘
+
+可选报告：工具诊断事实 → 上下文预算 → 模型 API → Schema/事实校验
 ```
 
-### 4.5 一键复现全部验收
+本人负责应用问题定义、仿真数据生成、异常检测与故障匹配、维修/验证工具、MCP 服务、SOP、展示后端和前端，以及本仓库的测试与运行文档。开发使用 AI 辅助，过程见 [记录](docs/AI_DEVELOPMENT.md)。
 
-```powershell
-.\run_all.ps1
+AGH 负责模型路由、底层 Agent 执行、资源管理与审批；MCP SDK 提供协议实现，Pydantic 提供校验。这些第三方能力不计为本人从零实现。
+
+一个关键决策是维修后复测始终参照维修前的健康基线，避免把“从复测第一秒就存在的残留故障”误当正常。参见 [维修验证](tools/verify_repair.py)与对应回归测试。
+
+## Docker 快速体验
+
+```sh
+docker build -t zhiwei-offline .
+docker run --rm -p 8801:8801 zhiwei-offline
 ```
 
-会依次执行：故障诊断验收（5/5）→ 闭环验收（6/6）→ 异常恢复验收（4/4）→ 三案例演示（3/3）→ 生成展示页。
+此镜像运行离线工具，不需要模型密钥。完整模型云部署另见 [Render 指南](deploy/render/README.md)；它需要单独验证模型、MCP 和 Agent 执行，不以离线镜像通过代替。
 
-### 4.6 打开演示
+## 项目背景与边界
 
-```powershell
-cd app
-.\start_demo.ps1          # 启动本地演示服务
-# 浏览器打开 http://127.0.0.1:8801/
-```
+本项目源于 2026 年江苏省 AI+科学与工程创新实践黑客松（本科生组，U225，SoloAI Lab）。比赛原始说明保留在 [赛事文档](docs/HACKATHON.md)，历史模型会话与验收材料在 [evidence/](evidence/)。历史记录不等于当前版本已重新完成真实模型测试。
 
-演示页支持：选择设备（M-001~M-005）/ 上传 CSV / 选择「维修前基线」→ 点「开始智能诊断」，
-页面实时显示 **Agent 执行时间线**、故障诊断、再次维修方案与维修验证结果。
+数据全部为程序生成的仿真数据，维修也是文件级模拟。项目不控制真实设备；现场准确率、真实模型效果评测和生产部署仍需要进一步验证。PDF/OCR、3D 建模、独立开发 AGH 等未实现能力不写成已有经验。
 
-**离线查看**：`app/zhiwei-demo.html` 是**自包含单文件**（数据内嵌），双击即可查看三案例结果，无需任何环境。
-
----
-
-## 五、目录结构
-
-```
-AI-Industrial-Agent/
-├─ README.md                      本文件
-├─ run_all.ps1                    一键复现全部验收
-├─ package_submission.ps1         生成符合官方命名规则的提交 ZIP
-├─ docs/
-│   ├─ 作品信息.md                 提交表单填写内容（含 ≤50 字简介）
-│   ├─ 成员分工与独立完成声明.md     官方必填
-│   └─ 第三方素材来源说明.md        官方必填（如实说明）
-├─ app/                           展示层
-│   ├─ zhiwei-live.html           交互式在线诊断页（真跑 AGH Agent）
-│   ├─ demo_server.py             本地演示服务（SSE 实时推送）
-│   ├─ zhiwei-demo.html           三案例结果展示页（自包含，可离线/上云）
-│   └─ start_demo.ps1             一键启动
-├─ agent/mcp/                     智维 MCP 工具服务（9 个工具）
-├─ tools/                         工业工具链
-│   ├─ fault_library.py           故障知识库（特征 + 维修方案）
-│   ├─ anomaly_detect.py          异常检测
-│   ├─ fault_diagnose.py          故障诊断
-│   ├─ repair_plan.py             维修方案生成
-│   ├─ simulate_repair.py         模拟维修
-│   ├─ verify_repair.py           维修后验证
-│   ├─ closed_loop.py             闭环编排
-│   ├─ demo_misdiagnosis.py       错误诊断与恢复演示
-│   ├─ validate_*.py              各阶段验收脚本
-│   └─ make_test_csvs.py          测试数据生成
-├─ data/                          传感器数据
-│   ├─ sensor_*.csv               5 类工况数据
-│   ├─ test/                      三份测试 CSV（正常/故障/维修失败）
-│   └─ repairs/                   维修后复测数据与闭环记录
-└─ evidence/                      运行与验证证据（Day1–Day5）
-    ├─ day1/ … day5/              AGH 会话导出、trace、验收报告
-    └─ hackathon-notice.txt       赛事通知文本（便于对照）
-```
-
----
-
-## 六、验证结果（可复现）
-
-| 验收项 | 结果 | 脚本 |
-|---|---|---|
-| 故障诊断准确率 | **5/5 = 100%** | `tools/validate_pipeline.py` |
-| 完整闭环（含失败重规划） | **6/6 = 100%** | `tools/validate_closed_loop.py` |
-| 异常恢复（错误诊断→纠正） | **4/4 = 100%** | `tools/validate_day4.py` |
-| 三测试案例（正常/边界/失败） | **3/3 = 100%** | `tools/run_demo_cases.py` |
-| MCP 工具可用性 | **9/9 可调用** | `agent/mcp/verify_mcp_client.py` |
-
-**运行证据**（`evidence/`）：每个阶段的 AGH 会话导出（HTML + JSON）、闭环 trace、
-验收报告 JSON，可作为"Agnes 模型参与核心任务"的调用链证据。
-
----
-
-## 七、第三方素材来源
-
-详见 [`docs/第三方素材来源说明.md`](docs/第三方素材来源说明.md)。核心说明：
-
-- **Agnes Harness (AGH)**：Apache-2.0，来自 `github.com/AgnesAI-Labs/agnes-harness`，作为智能体运行底座（未修改源码）；
-- **Agnes 模型**：`agnes-3.0-flash`，经官方 API 调用；
-- **MCP Python SDK**：`mcp` 2.3.0（MIT），用于把工具暴露给 AGH；
-- **其余全部为团队原创代码**，Python 侧除 MCP SDK 外仅使用标准库；
-- **数据**：全部由本项目的生成器程序化生成（仿真数据），未使用任何第三方数据集。
-
----
-
-## 八、许可
-
-本项目原创代码采用 **Apache-2.0** 许可。AGH 及其派生部分遵循其原始许可（Apache-2.0）。
----
-
-## 在线体验（无需安装）
-
-| 入口 | 链接 |
-|---|---|
-| 🌐 **三案例结果展示页**（GitHub Pages，点开即看） | https://huangfushengxin.github.io/zhiwei-industrial-agent/ |
-| 📦 **代码仓库** | https://github.com/huangfushengxin/zhiwei-industrial-agent |
-| 🎬 **演示视频**（3 分 59 秒） | https://www.bilibili.com/video/BV1MEpn6cExt/ |
-
-> 提示：展示页为自包含单文件 `index.html`（数据内嵌），无需服务器即可浏览。
-> 完整交互式演示（可上传数据、驱动真实 Agnes Agent）请按下方「快速开始」在本地运行。
+原创代码采用 [Apache-2.0](LICENSE)；第三方来源见 [说明](docs/第三方素材来源说明.md)。
