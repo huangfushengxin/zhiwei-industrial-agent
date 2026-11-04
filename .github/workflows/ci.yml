@@ -8,10 +8,15 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   python:
     name: Python ${{ matrix.python }} / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
@@ -39,13 +44,14 @@ jobs:
   docker:
     name: Offline Docker smoke test
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v6
       - run: docker build -t zhiwei-offline .
       - run: docker run -d --name zhiwei -p 8801:8801 zhiwei-offline
       - name: Check HTTP health and offline mode
         run: |
-          curl --fail --retry 15 --retry-connrefused --retry-delay 1 http://127.0.0.1:8801/api/health -o health.json
+          curl --fail --retry 15 --retry-all-errors --retry-delay 1 --retry-max-time 30 --connect-timeout 2 --max-time 5 http://127.0.0.1:8801/api/health -o health.json
           python -c "import json; h=json.load(open('health.json')); assert h['ok'] and h['mode']=='offline'"
       - if: always()
         run: docker logs zhiwei

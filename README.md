@@ -40,7 +40,7 @@ python tools/closed_loop.py data/sensor_overload.csv --repair-effectiveness 0.5 
 | Context window | 给输出留预算，保留系统规则与当前事实，按完整轮次淘汰最旧历史；必需内容超限则拒绝请求 | [上下文预算](agent/llm/context.py)、[测试](tests/test_context.py) |
 | pytest / 自动化 | 工具回归、HTTP/SSE、MCP stdio、模型错误响应与上下文边界 | [测试目录](tests/)、[GitHub Actions](.github/workflows/ci.yml) |
 | Docker / 部署 | 无密钥工具演示镜像；另有固定 AGH 提交的 Render 模型部署方案 | [Dockerfile](Dockerfile)、[Render](deploy/render/) |
-| Git 协作与 AI 开发 | 分支/PR、检查记录、真实 AI 辅助开发过程；不伪造独立 review | [贡献指南](CONTRIBUTING.md)、[开发记录](docs/AI_DEVELOPMENT.md) |
+| Git 协作与 AI 开发 | 分支/PR、检查记录、真实 AI 辅助开发过程；不伪造独立 review | [本次 PR #1](https://github.com/huangfushengxin/zhiwei-industrial-agent/pull/1)、[贡献指南](CONTRIBUTING.md)、[开发记录](docs/AI_DEVELOPMENT.md) |
 
 可选 LLM 报告模块展示应用层 API/输出/上下文处理，是独立诊断报告路径，不声称替代 AGH 的自主 Agent 或实现了新的 Agent 框架。它采用客户端校验，没有假定供应商支持服务端 strict JSON Schema。
 

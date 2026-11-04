@@ -2,6 +2,8 @@
 
 日期：2026-11-04。需求：补齐首次运行、岗位工程证据和求职 README。使用 Codex 辅助读取代码、实现、设计回归测试与自查；项目所有者负责理解、维护与面试解释。没有虚构其他开发者或独立 reviewer。
 
+真实协作产物：[PR #1](https://github.com/huangfushengxin/zhiwei-industrial-agent/pull/1)，分支 `codex/recruiting-readiness`；检查结果在 PR Checks 与 Actions 中查看。这里只记录实际存在的提交与自动检查，没有以自查冒充他人审批。
+
 ## 从问题到验证
 
 | 观察到的问题 | 实现决策 | 验证证据 |
@@ -12,6 +14,7 @@
 | 工具 JSON 不足以证明模型结构化输出 | 新增独立模型报告客户端、严格 Schema 与核心事实校验 | 畸形 JSON、多余字段、矛盾故障、二次纠正失败测试 |
 | 只有底座上下文配置，缺少应用侧策略 | 保留必需规则/事实，按完整轮次淘汰最旧历史 | 中文预算、整轮淘汰、过大证据在请求前拒绝测试 |
 | 测试可能依赖作者环境或覆盖数据 | 独立 venv、临时副本验收、Windows/Linux CI | pytest XML、验收 JSON、依赖清单作为 Actions artifacts |
+| 首轮 Docker CI 在服务启动瞬间遭遇 connection reset，健康探测提前失败 | 对启动期网络错误进行有总时限的重试；不忽略最终错误 | 真镜像构建、容器启动和 HTTP 模式检查 |
 
 ## 使用 AI 的工作方法
 
